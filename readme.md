@@ -16,6 +16,6 @@ the `metadata` event has the full websocket event
 
 you can pass in a custom protocol to the constructor as the second argument
 
-require('websocket-stream').WebsocketStream is the raw constructor
+`require('websocket-stream').WebsocketStream` is the raw constructor
 
 BSD LICENSE
