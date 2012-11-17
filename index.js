@@ -2,14 +2,24 @@ var stream = require('stream')
 var util = require('util')
 
 function WebsocketStream(server, protocol) {
-  var me = this
-  stream.Stream.call(me)
+  var self = this
+  stream.Stream.call(this)
   this.readable = true
   this.writable = true
-  me.ws = new WebSocket(server, protocol)
-  me.ws.onmessage = me.onMessage.bind(this)
-  me.ws.onerror = me.onError.bind(this)
-  me.ws.onclose = me.onClose.bind(this)
+  if (typeof server === "object") {
+    this.ws = server
+    this.ws.on('message', this.onMessage.bind(this))
+    this.ws.on('error', this.onError.bind(this))
+    this.ws.on('close', this.onClose.bind(this))
+    this.ws.on('open', function() {
+      self.emit('open')
+    })
+  } else {
+    this.ws = new WebSocket(server, protocol)
+    this.ws.onmessage = this.onMessage.bind(this)
+    this.ws.onerror = this.onError.bind(this)
+    this.ws.onclose = this.onClose.bind(this)
+  }
 }
 
 util.inherits(WebsocketStream, stream.Stream)
@@ -20,8 +30,8 @@ module.exports = function(server, protocol) {
 
 module.exports.WebsocketStream = WebsocketStream
 
-WebsocketStream.prototype.onMessage = function(e) {
-  this.emit('metadata', e)
+WebsocketStream.prototype.onMessage = function(e, flags) {
+  this.emit('metadata', e, flags)
   this.emit('data', e.data)
 }
 
@@ -33,8 +43,8 @@ WebsocketStream.prototype.onClose = function(err) {
   this.emit('end')
 }
 
-WebsocketStream.prototype.write = function(data) {
-  return this.ws.send(data)
+WebsocketStream.prototype.write = function(data, options) {
+  return this.ws.send(data, options)
 }
 
 WebsocketStream.prototype.end = function() {
