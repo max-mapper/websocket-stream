@@ -1,5 +1,7 @@
 {
   "name": "websocket-stream",
+  "description": "websockets with the node stream api. works in browser and node",
+  "keywords": ["websocket", "websockets", "stream", "streams", "realtime"],
   "version": "0.0.3",
   "_npmUser": {
     "name": "maxogden",
