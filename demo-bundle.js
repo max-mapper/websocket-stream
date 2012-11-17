@@ -383,20 +383,21 @@ require.define("/js/websocket-stream/package.json",function(require,module,expor
 require.define("/js/websocket-stream/index.js",function(require,module,exports,__dirname,__filename,process){var stream = require('stream')
 var util = require('util')
 
-function WebsocketStream(server) {
+function WebsocketStream(server, protocol) {
   var me = this
   stream.Stream.call(me)
   this.readable = true
   this.writable = true
-  me.ws = new WebSocket(server)
+  me.ws = new WebSocket(server, protocol)
   me.ws.onmessage = me.onMessage.bind(this)
   me.ws.onerror = me.onError.bind(this)
+  me.ws.onclose = me.onClose.bind(this)
 }
 
 util.inherits(WebsocketStream, stream.Stream)
 
-module.exports = function(server) {
-  return new WebsocketStream(server)
+module.exports = function(server, protocol) {
+  return new WebsocketStream(server, protocol)
 }
 
 module.exports.WebsocketStream = WebsocketStream
@@ -410,12 +411,16 @@ WebsocketStream.prototype.onError = function(err) {
   this.emit('error', err)
 }
 
+WebsocketStream.prototype.onClose = function(err) {
+  this.emit('end')
+}
+
 WebsocketStream.prototype.write = function(data) {
   return this.ws.send(data)
 }
 
 WebsocketStream.prototype.end = function() {
-  this.emit('end')
+  this.ws.close()
 }
 });
 
@@ -1374,11 +1379,8 @@ function through (write, end) {
 
 require.define("/js/websocket-stream/demo.js",function(require,module,exports,__dirname,__filename,process){var websocket = require('./')
 var elstreamo = require('el-streamo')
-
 ws = websocket('ws://localhost:8080')
-
 var elstream = elstreamo.writable('#messages')
-
 ws.pipe(elstream)
 });
 require("/js/websocket-stream/demo.js");
