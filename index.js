@@ -31,8 +31,8 @@ module.exports = function(server, protocol) {
 module.exports.WebsocketStream = WebsocketStream
 
 WebsocketStream.prototype.onMessage = function(e, flags) {
-  this.emit('metadata', e, flags)
-  this.emit('data', e.data)
+  if (e.data) return this.emit('data', e.data, flags)
+  this.emit('data', e, flags)
 }
 
 WebsocketStream.prototype.onError = function(err) {
