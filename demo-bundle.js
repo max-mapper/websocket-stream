@@ -12,7 +12,7 @@
 require.paths = [];
 require.modules = {};
 require.cache = {};
-require.extensions = [".js",".coffee"];
+require.extensions = [".js",".coffee",".json"];
 
 require._core = {
     'assert': true,
@@ -139,10 +139,13 @@ require.alias = function (from, to) {
 
 (function () {
     var process = {};
+    var global = typeof window !== 'undefined' ? window : {};
+    var definedProcess = false;
     
     require.define = function (filename, fn) {
-        if (require.modules.__browserify_process) {
+        if (!definedProcess && require.modules.__browserify_process) {
             process = require.modules.__browserify_process();
+            definedProcess = true;
         }
         
         var dirname = require._core[filename]
@@ -154,7 +157,7 @@ require.alias = function (from, to) {
             var requiredModule = require(file, dirname);
             var cached = require.cache[require.resolve(file, dirname)];
 
-            if (cached.parent === null) {
+            if (cached && cached.parent === null) {
                 cached.parent = module_;
             }
 
@@ -183,7 +186,8 @@ require.alias = function (from, to) {
                 module_.exports,
                 dirname,
                 filename,
-                process
+                process,
+                global
             );
             module_.loaded = true;
             return module_.exports;
@@ -192,7 +196,7 @@ require.alias = function (from, to) {
 })();
 
 
-require.define("path",function(require,module,exports,__dirname,__filename,process){function filter (xs, fn) {
+require.define("path",function(require,module,exports,__dirname,__filename,process,global){function filter (xs, fn) {
     var res = [];
     for (var i = 0; i < xs.length; i++) {
         if (fn(xs[i], i, xs)) res.push(xs[i]);
@@ -326,17 +330,65 @@ exports.basename = function(path, ext) {
 exports.extname = function(path) {
   return splitPathRe.exec(path)[3] || '';
 };
+
+exports.relative = function(from, to) {
+  from = exports.resolve(from).substr(1);
+  to = exports.resolve(to).substr(1);
+
+  function trim(arr) {
+    var start = 0;
+    for (; start < arr.length; start++) {
+      if (arr[start] !== '') break;
+    }
+
+    var end = arr.length - 1;
+    for (; end >= 0; end--) {
+      if (arr[end] !== '') break;
+    }
+
+    if (start > end) return [];
+    return arr.slice(start, end - start + 1);
+  }
+
+  var fromParts = trim(from.split('/'));
+  var toParts = trim(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
 });
 
-require.define("__browserify_process",function(require,module,exports,__dirname,__filename,process){var process = module.exports = {};
+require.define("__browserify_process",function(require,module,exports,__dirname,__filename,process,global){var process = module.exports = {};
 
 process.nextTick = (function () {
-    var queue = [];
+    var canSetImmediate = typeof window !== 'undefined'
+        && window.setImmediate;
     var canPost = typeof window !== 'undefined'
         && window.postMessage && window.addEventListener
     ;
-    
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
     if (canPost) {
+        var queue = [];
         window.addEventListener('message', function (ev) {
             if (ev.source === window && ev.data === 'browserify-tick') {
                 ev.stopPropagation();
@@ -346,14 +398,15 @@ process.nextTick = (function () {
                 }
             }
         }, true);
-    }
-    
-    return function (fn) {
-        if (canPost) {
+
+        return function nextTick(fn) {
             queue.push(fn);
             window.postMessage('browserify-tick', '*');
-        }
-        else setTimeout(fn, 0);
+        };
+    }
+
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
     };
 })();
 
@@ -376,11 +429,13 @@ process.binding = function (name) {
         cwd = path.resolve(dir, cwd);
     };
 })();
+
 });
 
-require.define("/js/websocket-stream/package.json",function(require,module,exports,__dirname,__filename,process){module.exports = {}});
+require.define("/js/websocket-stream/package.json",function(require,module,exports,__dirname,__filename,process,global){module.exports = {}
+});
 
-require.define("/js/websocket-stream/index.js",function(require,module,exports,__dirname,__filename,process){var stream = require('stream')
+require.define("/js/websocket-stream/index.js",function(require,module,exports,__dirname,__filename,process,global){var stream = require('stream')
 var util = require('util')
 
 function WebsocketStream(server, protocol) {
@@ -413,8 +468,8 @@ module.exports = function(server, protocol) {
 module.exports.WebsocketStream = WebsocketStream
 
 WebsocketStream.prototype.onMessage = function(e, flags) {
-  this.emit('metadata', e, flags)
-  this.emit('data', e.data)
+  if (e.data) return this.emit('data', e.data, flags)
+  this.emit('data', e, flags)
 }
 
 WebsocketStream.prototype.onError = function(err) {
@@ -432,9 +487,10 @@ WebsocketStream.prototype.write = function(data, options) {
 WebsocketStream.prototype.end = function() {
   this.ws.close()
 }
+
 });
 
-require.define("stream",function(require,module,exports,__dirname,__filename,process){var events = require('events');
+require.define("stream",function(require,module,exports,__dirname,__filename,process,global){var events = require('events');
 var util = require('util');
 
 function Stream() {
@@ -553,9 +609,10 @@ Stream.prototype.pipe = function(dest, options) {
   // Allow for unix-like usage: A.pipe(B).pipe(C)
   return dest;
 };
+
 });
 
-require.define("events",function(require,module,exports,__dirname,__filename,process){if (!process.EventEmitter) process.EventEmitter = function () {};
+require.define("events",function(require,module,exports,__dirname,__filename,process,global){if (!process.EventEmitter) process.EventEmitter = function () {};
 
 var EventEmitter = exports.EventEmitter = process.EventEmitter;
 var isArray = typeof Array.isArray === 'function'
@@ -564,6 +621,13 @@ var isArray = typeof Array.isArray === 'function'
         return Object.prototype.toString.call(xs) === '[object Array]'
     }
 ;
+function indexOf (xs, x) {
+    if (xs.indexOf) return xs.indexOf(x);
+    for (var i = 0; i < xs.length; i++) {
+        if (x === xs[i]) return i;
+    }
+    return -1;
+}
 
 // By default EventEmitters will print a warning if more than
 // 10 listeners are added to it. This is a useful default which
@@ -700,7 +764,7 @@ EventEmitter.prototype.removeListener = function(type, listener) {
   var list = this._events[type];
 
   if (isArray(list)) {
-    var i = list.indexOf(listener);
+    var i = indexOf(list, listener);
     if (i < 0) return this;
     list.splice(i, 1);
     if (list.length == 0)
@@ -726,9 +790,15 @@ EventEmitter.prototype.listeners = function(type) {
   }
   return this._events[type];
 };
+
 });
 
-require.define("util",function(require,module,exports,__dirname,__filename,process){var events = require('events');
+require.define("util",function(require,module,exports,__dirname,__filename,process,global){var events = require('events');
+
+exports.isArray = isArray;
+exports.isDate = function(obj){return Object.prototype.toString.call(obj) === '[object Date]'};
+exports.isRegExp = function(obj){return Object.prototype.toString.call(obj) === '[object RegExp]'};
+
 
 exports.print = function () {};
 exports.puts = function () {};
@@ -1040,11 +1110,47 @@ exports.inherits = function(ctor, superCtor) {
     }
   });
 };
+
+var formatRegExp = /%[sdj%]/g;
+exports.format = function(f) {
+  if (typeof f !== 'string') {
+    var objects = [];
+    for (var i = 0; i < arguments.length; i++) {
+      objects.push(exports.inspect(arguments[i]));
+    }
+    return objects.join(' ');
+  }
+
+  var i = 1;
+  var args = arguments;
+  var len = args.length;
+  var str = String(f).replace(formatRegExp, function(x) {
+    if (x === '%%') return '%';
+    if (i >= len) return x;
+    switch (x) {
+      case '%s': return String(args[i++]);
+      case '%d': return Number(args[i++]);
+      case '%j': return JSON.stringify(args[i++]);
+      default:
+        return x;
+    }
+  });
+  for(var x = args[i]; i < len; x = args[++i]){
+    if (x === null || typeof x !== 'object') {
+      str += ' ' + x;
+    } else {
+      str += ' ' + exports.inspect(x);
+    }
+  }
+  return str;
+};
+
 });
 
-require.define("/node_modules/el-streamo/package.json",function(require,module,exports,__dirname,__filename,process){module.exports = {}});
+require.define("/node_modules/el-streamo/package.json",function(require,module,exports,__dirname,__filename,process,global){module.exports = {}
+});
 
-require.define("/node_modules/el-streamo/index.js",function(require,module,exports,__dirname,__filename,process){var through = require('through')
+require.define("/node_modules/el-streamo/index.js",function(require,module,exports,__dirname,__filename,process,global){var through = require('through')
 
 function getElement(el) {
   if ('string' === typeof el)
@@ -1283,11 +1389,13 @@ function pause () {
   })
 */
 
+
 });
 
-require.define("/node_modules/el-streamo/node_modules/through/package.json",function(require,module,exports,__dirname,__filename,process){module.exports = {"main":"index.js"}});
+require.define("/node_modules/el-streamo/node_modules/through/package.json",function(require,module,exports,__dirname,__filename,process,global){module.exports = {"main":"index.js"}
+});
 
-require.define("/node_modules/el-streamo/node_modules/through/index.js",function(require,module,exports,__dirname,__filename,process){var Stream = require('stream')
+require.define("/node_modules/el-streamo/node_modules/through/index.js",function(require,module,exports,__dirname,__filename,process,global){var Stream = require('stream')
 
 // through
 //
@@ -1385,13 +1493,15 @@ function through (write, end) {
   return stream
 }
 
+
 });
 
-require.define("/js/websocket-stream/demo.js",function(require,module,exports,__dirname,__filename,process){var websocket = require('./')
+require.define("/js/websocket-stream/demo.js",function(require,module,exports,__dirname,__filename,process,global){var websocket = require('./')
 var elstreamo = require('el-streamo')
 ws = websocket('ws://localhost:8080')
 var elstream = elstreamo.writable('#messages')
 ws.pipe(elstream)
+
 });
 require("/js/websocket-stream/demo.js");
 })();

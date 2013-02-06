@@ -43,8 +43,8 @@ WebsocketStream.prototype.onClose = function(err) {
   this.emit('end')
 }
 
-WebsocketStream.prototype.write = function(data, options) {
-  return this.ws.send(data, options)
+WebsocketStream.prototype.write = function(data) {
+  return this.ws.send(data)
 }
 
 WebsocketStream.prototype.end = function() {
