@@ -2,7 +2,6 @@ var stream = require('stream')
 var util = require('util')
 
 function WebsocketStream(server, protocol) {
-  var self = this
   stream.Stream.call(this)
   this.readable = true
   this.writable = true
@@ -11,14 +10,13 @@ function WebsocketStream(server, protocol) {
     this.ws.on('message', this.onMessage.bind(this))
     this.ws.on('error', this.onError.bind(this))
     this.ws.on('close', this.onClose.bind(this))
-    this.ws.on('open', function() {
-      self.emit('open')
-    })
+    this.ws.on('open', this.onOpen.bind(this))
   } else {
     this.ws = new WebSocket(server, protocol)
     this.ws.onmessage = this.onMessage.bind(this)
     this.ws.onerror = this.onError.bind(this)
     this.ws.onclose = this.onClose.bind(this)
+    this.ws.onopen = this.onOpen.bind(this)
   }
 }
 
@@ -41,6 +39,10 @@ WebsocketStream.prototype.onError = function(err) {
 
 WebsocketStream.prototype.onClose = function(err) {
   this.emit('end')
+}
+
+WebsocketStream.prototype.onOpen = function(err) {
+  this.emit('open')
 }
 
 WebsocketStream.prototype.write = function(data) {
