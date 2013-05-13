@@ -1,10 +1,15 @@
 var stream = require('stream')
 var util = require('util')
 
-function WebsocketStream(server, protocol) {
+function WebsocketStream(server, opts) {
   stream.Stream.call(this)
   this.readable = true
   this.writable = true
+  if (!opts) opts = {}
+  if (typeof opts == 'string') {
+    opts = { protocol : opts }
+  }
+  this.opts = opts
   if (typeof server === "object") {
     this.ws = server
     this.ws.on('message', this.onMessage.bind(this))
@@ -12,7 +17,8 @@ function WebsocketStream(server, protocol) {
     this.ws.on('close', this.onClose.bind(this))
     this.ws.on('open', this.onOpen.bind(this))
   } else {
-    this.ws = new WebSocket(server, protocol)
+    this.ws = new WebSocket(server, opts.protocol)
+    if (opts.binaryType) this.ws.binaryType = opts.binaryType
     this.ws.onmessage = this.onMessage.bind(this)
     this.ws.onerror = this.onError.bind(this)
     this.ws.onclose = this.onClose.bind(this)
@@ -46,7 +52,7 @@ WebsocketStream.prototype.onOpen = function(err) {
 }
 
 WebsocketStream.prototype.write = function(data) {
-  return this.ws.send(data)
+  return this.ws.send(data, this.opts)
 }
 
 WebsocketStream.prototype.end = function() {
