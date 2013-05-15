@@ -1,13 +1,21 @@
 {
   "name": "websocket-stream",
   "description": "websockets with the node stream api. works in browser and node",
-  "keywords": ["websocket", "websockets", "stream", "streams", "realtime"],
+  "keywords": [
+    "websocket",
+    "websockets",
+    "stream",
+    "streams",
+    "realtime"
+  ],
   "version": "0.0.5",
   "_npmUser": {
     "name": "maxogden",
     "email": "max@maxogden.com"
   },
-  "dependencies": {},
+  "dependencies": {
+    "isbuffer": "0.0.0"
+  },
   "devDependencies": {
     "ws": "0.4.22",
     "el-streamo": "1.0.0",
