@@ -1,5 +1,6 @@
 var stream = require('stream')
 var util = require('util')
+var isBuffer = require('isbuffer')
 
 function WebsocketStream(server, protocol) {
   stream.Stream.call(this)
@@ -13,6 +14,7 @@ function WebsocketStream(server, protocol) {
     this.ws.on('open', this.onOpen.bind(this))
   } else {
     this.ws = new WebSocket(server, protocol)
+    this.ws.binaryType = 'arraybuffer'
     this.ws.onmessage = this.onMessage.bind(this)
     this.ws.onerror = this.onError.bind(this)
     this.ws.onclose = this.onClose.bind(this)
@@ -46,7 +48,9 @@ WebsocketStream.prototype.onOpen = function(err) {
 }
 
 WebsocketStream.prototype.write = function(data) {
-  return this.ws.send(data)
+  typeof WebSocket != 'undefined' && this.ws instanceof WebSocket
+    ? this.ws.send(data)
+    : this.ws.send(data, { binary : isBuffer(data) })
 }
 
 WebsocketStream.prototype.end = function() {
