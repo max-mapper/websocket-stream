@@ -36,4 +36,11 @@ you can pass in a custom protocol to the constructor as the second argument
 
 `require('websocket-stream').WebsocketStream` is the raw constructor
 
+## binary sockets
+
+To send binary data just write a [Buffer](nodejs.org/api/buffer.html) or [TypedArray](https://developer.mozilla.org/en-US/docs/JavaScript/Typed_arrays) to the stream.
+On the other end you will receive [Buffer](nodejs.org/api/buffer.html) instances if it's the server and [ArrayBuffer](https://developer.mozilla.org/en-US/docs/JavaScript/Typed_arrays/ArrayBuffer) instances if it's the client.
+
+## license
+
 BSD LICENSE
