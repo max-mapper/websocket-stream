@@ -6,7 +6,7 @@ use HTML5 [websockets](https://developer.mozilla.org/en-US/docs/WebSockets) the 
 
 # in the browser
 
-you can use [browserify](http://github.com/substack/node-browserify) to package this module for browser use. there is a also pre-made + minified version you can download and use right away called `websocket-stream-min.js`
+you can use [browserify](http://github.com/substack/node-browserify) to package this module for browser use.
 
 ```javascript
 var websocket = require('websocket-stream')
@@ -30,16 +30,27 @@ wss.on('connection', function(ws) {
 })
 ```
 
-## extras
+## options
 
-you can pass in a custom protocol to the constructor as the second argument
+pass in options as the second argument like this:
 
-`require('websocket-stream').WebsocketStream` is the raw constructor
+```js
+websocketStream('ws://foobar', { binary: true})
+```
 
-## binary sockets
+possible options are...
 
-To send binary data just write a [Buffer](nodejs.org/api/buffer.html) or [TypedArray](https://developer.mozilla.org/en-US/docs/JavaScript/Typed_arrays) to the stream.
-On the other end you will receive [Buffer](nodejs.org/api/buffer.html) instances if it's the server and [ArrayBuffer](https://developer.mozilla.org/en-US/docs/JavaScript/Typed_arrays/ArrayBuffer) instances if it's the client.
+```js
+{ 
+  protocol: // optional specify websocket protocol,
+  binary: // optional, defaults to false
+}
+```
+
+### binary sockets
+
+To send binary data just initialize your websocket stream with the `binary: true` option. Then you can write a [Buffer](nodejs.org/api/buffer.html) or [TypedArray](https://developer.mozilla.org/en-US/docs/JavaScript/Typed_arrays) to the stream.
+On the other end you will receive [Buffer](nodejs.org/api/buffer.html) instances if it's the server and [ArrayBuffer](https://developer.mozilla.org/en-US/docs/JavaScript/Typed_arrays/ArrayBuffer) instances if it's the client. Both sides will need `binary: true` set, otherwise the client will default to using `Blob` objects instead of `ArrayBuffer`s.
 
 ## license
 

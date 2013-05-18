@@ -1,6 +1,9 @@
 {
   "name": "websocket-stream",
   "description": "websockets with the node stream api. works in browser and node",
+  "scripts": {
+    "start": "browserify demo.js -o demo-bundle.js && node demo-server.js"
+  },
   "keywords": [
     "websocket",
     "websockets",
@@ -19,7 +22,8 @@
   "devDependencies": {
     "ws": "0.4.22",
     "el-streamo": "1.0.0",
-    "ecstatic": "0.1.7"
+    "ecstatic": "0.4.2",
+    "browserify": "2.14.1"
   },
   "optionalDependencies": {},
   "engines": {

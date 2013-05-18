@@ -2,8 +2,10 @@ var stream = require('stream')
 var util = require('util')
 var isBuffer = require('isbuffer')
 
-function WebsocketStream(server, protocol) {
+function WebsocketStream(server, options) {
+  if (!(this instanceof WebsocketStream)) return new WebsocketStream(server, options)
   stream.Stream.call(this)
+  this.options = options || {}
   this.readable = true
   this.writable = true
   if (typeof server === "object") {
@@ -13,8 +15,8 @@ function WebsocketStream(server, protocol) {
     this.ws.on('close', this.onClose.bind(this))
     this.ws.on('open', this.onOpen.bind(this))
   } else {
-    this.ws = new WebSocket(server, protocol)
-    this.ws.binaryType = 'arraybuffer'
+    this.ws = new WebSocket(server, this.options.protocol)
+    if (this.options.binary) this.ws.binaryType = 'arraybuffer'
     this.ws.onmessage = this.onMessage.bind(this)
     this.ws.onerror = this.onError.bind(this)
     this.ws.onclose = this.onClose.bind(this)
@@ -24,10 +26,7 @@ function WebsocketStream(server, protocol) {
 
 util.inherits(WebsocketStream, stream.Stream)
 
-module.exports = function(server, protocol) {
-  return new WebsocketStream(server, protocol)
-}
-
+module.exports = WebsocketStream
 module.exports.WebsocketStream = WebsocketStream
 
 WebsocketStream.prototype.onMessage = function(e, flags) {
@@ -50,7 +49,7 @@ WebsocketStream.prototype.onOpen = function(err) {
 WebsocketStream.prototype.write = function(data) {
   typeof WebSocket != 'undefined' && this.ws instanceof WebSocket
     ? this.ws.send(data)
-    : this.ws.send(data, { binary : isBuffer(data) })
+    : this.ws.send(data, { binary : this.options.binary && isBuffer(data) })
 }
 
 WebsocketStream.prototype.end = function() {
