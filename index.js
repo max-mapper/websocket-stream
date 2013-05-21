@@ -44,6 +44,7 @@ WebsocketStream.prototype.onClose = function(err) {
 
 WebsocketStream.prototype.onOpen = function(err) {
   this.emit('open')
+  this.emit('connect')
 }
 
 WebsocketStream.prototype.write = function(data) {
