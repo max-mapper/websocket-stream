@@ -35,22 +35,24 @@ wss.on('connection', function(ws) {
 pass in options as the second argument like this:
 
 ```js
-websocketStream('ws://foobar', { binary: true})
+websocketStream('ws://foobar', { binaryType: 'blob' })
 ```
 
 possible options are...
 
 ```js
 { 
-  protocol: // optional specify websocket protocol,
-  binary: // optional, defaults to false
+  protocol: // optional, string, specify websocket protocol
+  binaryType: // optional, string, defaults to 'arraybuffer', can also be 'blob'
 }
 ```
 
 ### binary sockets
 
-To send binary data just initialize your websocket stream with the `binary: true` option. Then you can write a [Buffer](nodejs.org/api/buffer.html) or [TypedArray](https://developer.mozilla.org/en-US/docs/JavaScript/Typed_arrays) to the stream.
-On the other end you will receive [Buffer](nodejs.org/api/buffer.html) instances if it's the server and [ArrayBuffer](https://developer.mozilla.org/en-US/docs/JavaScript/Typed_arrays/ArrayBuffer) instances if it's the client. Both sides will need `binary: true` set, otherwise the client will default to using `Blob` objects instead of `ArrayBuffer`s.
+To send binary data just write a [Buffer](nodejs.org/api/buffer.html) or [TypedArray](https://developer.mozilla.org/en-US/docs/JavaScript/Typed_arrays) to the stream.
+On the other end you will receive [Buffer](nodejs.org/api/buffer.html) instances if it's the server and [ArrayBuffer](https://developer.mozilla.org/en-US/docs/JavaScript/Typed_arrays/ArrayBuffer) instances if it's the client. The client will default to `ArrayBuffer` objects but can also be configured to receive `Blob`s.
+
+If you write binary data to a websocket on the server, the client will receive binary objects. Same thing goes for strings. 
 
 ## license
 

@@ -11,7 +11,7 @@
     "streams",
     "realtime"
   ],
-  "version": "0.0.5",
+  "version": "0.1.0",
   "_npmUser": {
     "name": "maxogden",
     "email": "max@maxogden.com"
@@ -23,7 +23,8 @@
     "ws": "0.4.22",
     "el-streamo": "1.0.0",
     "ecstatic": "0.4.2",
-    "browserify": "2.14.1"
+    "browserify": "2.14.1",
+    "stringstream": "0.0.4"
   },
   "optionalDependencies": {},
   "engines": {

@@ -16,7 +16,7 @@ function WebsocketStream(server, options) {
     this.ws.on('open', this.onOpen.bind(this))
   } else {
     this.ws = new WebSocket(server, this.options.protocol)
-    if (this.options.binary) this.ws.binaryType = 'arraybuffer'
+    this.ws.binaryType = this.options.binaryType || 'arraybuffer'
     this.ws.onmessage = this.onMessage.bind(this)
     this.ws.onerror = this.onError.bind(this)
     this.ws.onclose = this.onClose.bind(this)
@@ -50,7 +50,7 @@ WebsocketStream.prototype.onOpen = function(err) {
 WebsocketStream.prototype.write = function(data) {
   typeof WebSocket != 'undefined' && this.ws instanceof WebSocket
     ? this.ws.send(data)
-    : this.ws.send(data, { binary : this.options.binary && isBuffer(data) })
+    : this.ws.send(data, { binary : isBuffer(data) })
 }
 
 WebsocketStream.prototype.end = function() {

@@ -473,14 +473,6 @@ exports.format = function(f) {
 };
 
 },{"events":2}],4:[function(require,module,exports){
-var websocket = require('./')
-var elstreamo = require('el-streamo')
-ws = websocket('ws://localhost:8080' /*, {binary: true} */)
-var elstream = elstreamo.writable('#messages')
-ws.on('data', function(c) { console.log(c) })
-ws.pipe(elstream)
-
-},{"./":5,"el-streamo":6}],7:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -720,7 +712,15 @@ EventEmitter.prototype.listeners = function(type) {
 };
 
 })(require("__browserify_process"))
-},{"__browserify_process":7}],5:[function(require,module,exports){
+},{"__browserify_process":4}],5:[function(require,module,exports){
+var websocket = require('./')
+var elstreamo = require('el-streamo')
+ws = websocket('ws://localhost:8080')
+var elstream = elstreamo.writable('#messages')
+ws.on('data', function(c) { console.log(c) })
+ws.pipe(elstream)
+
+},{"./":6,"el-streamo":7}],6:[function(require,module,exports){
 var stream = require('stream')
 var util = require('util')
 var isBuffer = require('isbuffer')
@@ -739,7 +739,7 @@ function WebsocketStream(server, options) {
     this.ws.on('open', this.onOpen.bind(this))
   } else {
     this.ws = new WebSocket(server, this.options.protocol)
-    if (this.options.binary) this.ws.binaryType = 'arraybuffer'
+    this.ws.binaryType = this.options.binaryType || 'arraybuffer'
     this.ws.onmessage = this.onMessage.bind(this)
     this.ws.onerror = this.onError.bind(this)
     this.ws.onclose = this.onClose.bind(this)
@@ -767,19 +767,20 @@ WebsocketStream.prototype.onClose = function(err) {
 
 WebsocketStream.prototype.onOpen = function(err) {
   this.emit('open')
+  this.emit('connect')
 }
 
 WebsocketStream.prototype.write = function(data) {
   typeof WebSocket != 'undefined' && this.ws instanceof WebSocket
     ? this.ws.send(data)
-    : this.ws.send(data, { binary : this.options.binary && isBuffer(data) })
+    : this.ws.send(data, { binary : isBuffer(data) })
 }
 
 WebsocketStream.prototype.end = function() {
   this.ws.close()
 }
 
-},{"stream":1,"util":3,"isbuffer":8}],6:[function(require,module,exports){
+},{"stream":1,"util":3,"isbuffer":8}],7:[function(require,module,exports){
 var through = require('through')
 
 function getElement(el) {
@@ -1132,7 +1133,7 @@ function through (write, end) {
 
 
 })(require("__browserify_process"))
-},{"stream":1,"__browserify_process":7}],11:[function(require,module,exports){
+},{"stream":1,"__browserify_process":4}],11:[function(require,module,exports){
 (function(){// UTILITY
 var util = require('util');
 var Buffer = require("buffer").Buffer;
@@ -2906,5 +2907,5 @@ SlowBuffer.prototype.writeDoubleBE = Buffer.prototype.writeDoubleBE;
 	module.exports.fromByteArray = uint8ToBase64;
 }());
 
-},{}]},{},[4])
+},{}]},{},[5])
 ;
