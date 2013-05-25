@@ -56,3 +56,7 @@ WebsocketStream.prototype.write = function(data) {
 WebsocketStream.prototype.end = function() {
   this.ws.close()
 }
+
+WebsocketStream.prototype.destroy = function() {
+  this.ws.close()
+}
