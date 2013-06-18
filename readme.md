@@ -16,6 +16,14 @@ ws.pipe(somewhereAwesome)
 
 `ws` is a stream and speaks stream events: `data`, `error` and `end`. that means you can pipe output to anything that accepts streams. you can also pipe data into streams (such as a webcam feed or audio data)
 
+### browserify steps
+```javascript
+npm install -g browserify // install browserify
+cd node_modules/websocket-stream
+npm install . // install dev dependencies
+browserify index.js -s websocket-stream > websocket-stream.js // require websocket-stream.js in your client-side app
+```
+
 # on the server
 
 using the [`ws`](http://npmjs.org/ws) module you can make a websocket server and use this module to get websocket streams on the server:
