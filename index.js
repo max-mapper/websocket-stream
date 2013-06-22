@@ -41,10 +41,12 @@ WebsocketStream.prototype.onError = function(err) {
 }
 
 WebsocketStream.prototype.onClose = function(err) {
+  if (this._destroy) return
   this.emit('end')
 }
 
 WebsocketStream.prototype.onOpen = function(err) {
+  if (this._destroy) return
   this._open = true
   for (var i = 0; i < this._buffer.length; i++) {
     this._write(this._buffer[i])
@@ -52,6 +54,7 @@ WebsocketStream.prototype.onOpen = function(err) {
   this._buffer = undefined
   this.emit('open')
   this.emit('connect')
+  if (this._end) this.ws.close()
 }
 
 WebsocketStream.prototype.write = function(data) {
@@ -69,9 +72,11 @@ WebsocketStream.prototype._write = function(data) {
 }
 
 WebsocketStream.prototype.end = function() {
-  this.ws.close()
+  if (this._open) this.ws.close()
+  this._end = true
 }
 
 WebsocketStream.prototype.destroy = function() {
+  this._destroy = true
   this.ws.close()
 }
