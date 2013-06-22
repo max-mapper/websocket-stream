@@ -71,7 +71,8 @@ WebsocketStream.prototype._write = function(data) {
     : this.ws.send(data, { binary : isBuffer(data) })
 }
 
-WebsocketStream.prototype.end = function() {
+WebsocketStream.prototype.end = function(data) {
+  if (data !== undefined) this.write(data)
   if (this._open) this.ws.close()
   this._end = true
 }
