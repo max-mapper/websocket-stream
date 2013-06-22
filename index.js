@@ -16,6 +16,7 @@ function WebsocketStream(server, options) {
     this.ws.on('error', this.onError.bind(this))
     this.ws.on('close', this.onClose.bind(this))
     this.ws.on('open', this.onOpen.bind(this))
+    if (this.ws.readyState === 1) this._open = true
   } else {
     this.ws = new WebSocket(server, this.options.protocol)
     this.ws.binaryType = this.options.binaryType || 'arraybuffer'

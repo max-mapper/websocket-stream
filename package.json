@@ -1,5 +1,6 @@
 {
   "name": "websocket-stream",
+  "version": "0.2.0",
   "description": "websockets with the node stream api. works in browser and node",
   "scripts": {
     "start": "browserify demo.js -o demo-bundle.js && node demo-server.js"
@@ -11,7 +12,6 @@
     "streams",
     "realtime"
   ],
-  "version": "0.1.0",
   "_npmUser": {
     "name": "maxogden",
     "email": "max@maxogden.com"
