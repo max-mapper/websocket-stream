@@ -8,6 +8,8 @@ function WebsocketStream(server, options) {
   this.options = options || {}
   this.readable = true
   this.writable = true
+  this._buffer = []
+ 
   if (typeof server === "object") {
     this.ws = server
     this.ws.on('message', this.onMessage.bind(this))
@@ -39,24 +41,42 @@ WebsocketStream.prototype.onError = function(err) {
 }
 
 WebsocketStream.prototype.onClose = function(err) {
+  if (this._destroy) return
   this.emit('end')
 }
 
 WebsocketStream.prototype.onOpen = function(err) {
+  if (this._destroy) return
+  this._open = true
+  for (var i = 0; i < this._buffer.length; i++) {
+    this._write(this._buffer[i])
+  }
+  this._buffer = undefined
   this.emit('open')
   this.emit('connect')
+  if (this._end) this.ws.close()
 }
 
 WebsocketStream.prototype.write = function(data) {
+  if (!this._open) {
+    this._buffer.push(data)
+  } else {
+    this._write(data)
+  }
+}
+
+WebsocketStream.prototype._write = function(data) {
   typeof WebSocket != 'undefined' && this.ws instanceof WebSocket
     ? this.ws.send(data)
     : this.ws.send(data, { binary : isBuffer(data) })
 }
 
 WebsocketStream.prototype.end = function() {
-  this.ws.close()
+  if (this._open) this.ws.close()
+  this._end = true
 }
 
 WebsocketStream.prototype.destroy = function() {
+  this._destroy = true
   this.ws.close()
 }
