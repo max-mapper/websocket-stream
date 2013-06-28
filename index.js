@@ -64,6 +64,7 @@ WebsocketStream.prototype.write = function(data) {
   } else {
     this._write(data)
   }
+  return this;
 }
 
 WebsocketStream.prototype._write = function(data) {
