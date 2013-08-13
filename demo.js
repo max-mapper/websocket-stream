@@ -1,6 +1,6 @@
 var websocket = require('./')
 var elstreamo = require('el-streamo')
-ws = websocket('ws://localhost:8080')
+ws = websocket('ws://localhost:8080', {type: Uint8Array})
 var elstream = elstreamo.writable('#messages')
-ws.on('data', function(c) { console.log(c) })
+ws.on('data', function(c) { console.log({foo: c}) })
 ws.pipe(elstream)

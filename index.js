@@ -19,7 +19,6 @@ function WebsocketStream(server, options) {
     if (this.ws.readyState === 1) this._open = true
   } else {
     this.ws = new WebSocket(server, this.options.protocol)
-    this.ws.binaryType = this.options.binaryType || 'arraybuffer'
     this.ws.onmessage = this.onMessage.bind(this)
     this.ws.onerror = this.onError.bind(this)
     this.ws.onclose = this.onClose.bind(this)
@@ -33,8 +32,14 @@ module.exports = WebsocketStream
 module.exports.WebsocketStream = WebsocketStream
 
 WebsocketStream.prototype.onMessage = function(e, flags) {
-  if (e.data) return this.emit('data', e.data, flags)
-  this.emit('data', e, flags)
+  var data = e
+  if (data.data) data = data.data
+  
+  // type must be a Typed Array (ArrayBufferView)
+  var type = this.options.type
+  if (type && data instanceof ArrayBuffer) data = new type(data)
+  
+  this.emit('data', data, flags)
 }
 
 WebsocketStream.prototype.onError = function(err) {

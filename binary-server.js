@@ -11,3 +11,5 @@ wss.on('connection', function(ws) {
   for (var i = 0; i < 5; i++) stream.write(new Buffer(100))
   stream.end()
 })
+
+console.log(':8080')

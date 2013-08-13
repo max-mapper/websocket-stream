@@ -16,3 +16,5 @@ wss.on('connection', function(ws) {
     console.log('stream ended')
   })
 })
+
+console.log(':8080')

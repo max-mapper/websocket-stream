@@ -43,7 +43,9 @@ wss.on('connection', function(ws) {
 pass in options as the second argument like this:
 
 ```js
-websocketStream('ws://foobar', { binaryType: 'blob' })
+websocketStream('ws://foobar', { type: someTypedArray })
+
+// e.g. {type: Uint8Array} means you'll get Uint8Arrays back instead of ArrayBuffers
 ```
 
 possible options are...
@@ -51,7 +53,7 @@ possible options are...
 ```js
 { 
   protocol: // optional, string, specify websocket protocol
-  binaryType: // optional, string, defaults to 'arraybuffer', can also be 'blob'
+  type: // optional, TypedArray object, wraps the ArrayBuffer before emitting
 }
 ```
 
