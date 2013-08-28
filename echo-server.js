@@ -4,11 +4,13 @@ var http = require('http')
 var websocket = require('./')
 var server = null
 
-var port = module.exports.port = 4042
+var port = module.exports.port = 4342
+
+module.exports.url = 'ws://localhost:' + port
 
 module.exports.start = function(cb) {
   if (server) {
-    cb(new Error("already started"));
+    cb(new Error('already started'));
     return;
   }
 
@@ -17,6 +19,7 @@ module.exports.start = function(cb) {
 
   wss.on('connection', function(ws) {
     var stream = websocket(ws)
+
     stream.pipe(stream) // echo
   })
 
@@ -25,10 +28,20 @@ module.exports.start = function(cb) {
 
 module.exports.stop = function(cb) {
   if (!server) {
-    cb(new Error("not started"))
+    cb(new Error('not started'))
     return
   }
 
   server.close(cb)
   server = null
+}
+
+if (!module.parent) {
+  module.exports.start(function(err) {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    console.log('Echo server started on port ' + port);
+  });
 }

@@ -5,7 +5,9 @@ var echo = require("./echo-server")
 test('echo server', function(t) {
 
   echo.start(function() {
-    var client = websocket('ws://localhost:' + echo.port)
+    var client = websocket(echo.url, echo.options)
+
+    client.on('error', console.error)
 
     client.on('data', function(data) {
       t.equal(data, 'hello world')
