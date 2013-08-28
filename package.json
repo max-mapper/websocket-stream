@@ -3,7 +3,8 @@
   "version": "0.3.1",
   "description": "websockets with the node stream api. works in browser and node",
   "scripts": {
-    "start": "browserify demo.js -o demo-bundle.js && node demo-server.js"
+    "start": "browserify demo.js -o demo-bundle.js && node demo-server.js",
+    "test": "node test.js"
   },
   "keywords": [
     "websocket",
@@ -17,14 +18,15 @@
     "email": "max@maxogden.com"
   },
   "dependencies": {
+    "ws": "~0.4.22",
     "isbuffer": "0.0.0"
   },
   "devDependencies": {
-    "ws": "0.4.22",
     "el-streamo": "1.0.0",
     "ecstatic": "0.4.2",
     "browserify": "2.14.1",
-    "stringstream": "0.0.4"
+    "stringstream": "0.0.4",
+    "tape": "~1.0.4"
   },
   "optionalDependencies": {},
   "engines": {

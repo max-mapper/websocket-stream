@@ -1,6 +1,7 @@
 var stream = require('stream')
 var util = require('util')
 var isBuffer = require('isbuffer')
+var WebSocket = require('ws')
 
 function WebsocketStream(server, options) {
   if (!(this instanceof WebsocketStream)) return new WebsocketStream(server, options)
