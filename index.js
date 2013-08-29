@@ -50,6 +50,7 @@ WebsocketStream.prototype.onError = function(err) {
 WebsocketStream.prototype.onClose = function(err) {
   if (this._destroy) return
   this.emit('end')
+  this.emit('close')
 }
 
 WebsocketStream.prototype.onOpen = function(err) {
