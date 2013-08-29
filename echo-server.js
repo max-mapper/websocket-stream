@@ -4,7 +4,7 @@ var http = require('http')
 var websocket = require('./')
 var server = null
 
-var port = module.exports.port = 4342
+var port = module.exports.port = 8342
 
 module.exports.url = 'ws://localhost:' + port
 
