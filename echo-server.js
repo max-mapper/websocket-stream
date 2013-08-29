@@ -3,10 +3,11 @@ var WebSocketServer = require('ws').Server
 var http = require('http')
 var websocket = require('./')
 var server = null
+var fake = require('./fake-server')
 
-var port = module.exports.port = 8342
+var port = module.exports.port = fake.port
 
-module.exports.url = 'ws://localhost:' + port
+module.exports.url = fake.url
 
 module.exports.start = function(cb) {
   if (server) {

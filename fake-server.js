@@ -1,5 +1,6 @@
 
-module.exports.url = 'ws://localhost:4342'
+module.exports.port = 8342
+module.exports.url = 'ws://localhost:' + module.exports.port
 
 
 module.exports.start = function(cb) {
