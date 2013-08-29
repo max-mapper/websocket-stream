@@ -19,7 +19,7 @@
     "email": "max@maxogden.com"
   },
   "dependencies": {
-    "ws": "git://github.com/mcollina/ws.git#browserify",
+    "ws": "git://github.com/einaros/ws.git",
     "isbuffer": "0.0.0"
   },
   "devDependencies": {
