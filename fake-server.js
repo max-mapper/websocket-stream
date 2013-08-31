@@ -1,5 +1,5 @@
 
-module.exports.port = 8342
+module.exports.port = 8343
 module.exports.url = 'ws://localhost:' + module.exports.port
 
 

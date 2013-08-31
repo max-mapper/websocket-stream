@@ -19,8 +19,8 @@
     "email": "max@maxogden.com"
   },
   "dependencies": {
-    "ws": "git://github.com/einaros/ws.git",
-    "isbuffer": "0.0.0"
+    "isbuffer": "0.0.0",
+    "ws": "~0.4.30"
   },
   "devDependencies": {
     "el-streamo": "1.0.0",
@@ -39,13 +39,14 @@
   "testling": {
     "files": "test.js",
     "server": "node echo-server.js",
-    "browsers" : [
+    "browsers": [
       "ie/6..latest",
       "chrome/20..latest",
       "firefox/10..latest",
       "safari/latest",
       "opera/11.0..latest",
-      "iphone/6", "ipad/6"
+      "iphone/6",
+      "ipad/6"
     ]
   }
 }
