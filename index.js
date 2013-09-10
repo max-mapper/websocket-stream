@@ -1,6 +1,7 @@
 var stream = require('stream')
 var util = require('util')
 var isBuffer = require('isbuffer')
+var WebSocketPoly = require('ws')
 
 function WebsocketStream(server, options) {
   if (!(this instanceof WebsocketStream)) return new WebsocketStream(server, options)
@@ -18,7 +19,7 @@ function WebsocketStream(server, options) {
     this.ws.on('open', this.onOpen.bind(this))
     if (this.ws.readyState === 1) this._open = true
   } else {
-    this.ws = new WebSocket(server, this.options.protocol)
+    this.ws = new WebSocketPoly(server, this.options.protocol)
     this.ws.binaryType = this.options.binaryType || 'arraybuffer'
     this.ws.onmessage = this.onMessage.bind(this)
     this.ws.onerror = this.onError.bind(this)
