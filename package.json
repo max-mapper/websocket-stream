@@ -3,7 +3,9 @@
   "version": "0.3.1",
   "description": "websockets with the node stream api. works in browser and node",
   "scripts": {
-    "start": "browserify demo.js -o demo-bundle.js && node demo-server.js"
+    "start": "browserify demo.js -o demo-bundle.js && node demo-server.js",
+    "test": "node test.js",
+    "echo": "node echo-server.js"
   },
   "keywords": [
     "websocket",
@@ -17,17 +19,34 @@
     "email": "max@maxogden.com"
   },
   "dependencies": {
-    "isbuffer": "0.0.0"
+    "isbuffer": "0.0.0",
+    "ws": "~0.4.30"
   },
   "devDependencies": {
-    "ws": "0.4.22",
     "el-streamo": "1.0.0",
     "ecstatic": "0.4.2",
     "browserify": "2.14.1",
-    "stringstream": "0.0.4"
+    "stringstream": "0.0.4",
+    "tape": "~1.0.4"
   },
   "optionalDependencies": {},
   "engines": {
     "node": ">=0.8"
+  },
+  "browser": {
+    "./echo-server.js": "./fake-server.js"
+  },
+  "testling": {
+    "files": "test.js",
+    "server": "node echo-server.js",
+    "browsers": [
+      "ie/6..latest",
+      "chrome/20..latest",
+      "firefox/10..latest",
+      "safari/latest",
+      "opera/11.0..latest",
+      "iphone/6",
+      "ipad/6"
+    ]
   }
 }
