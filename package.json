@@ -7,6 +7,10 @@
     "test": "node test.js",
     "echo": "node echo-server.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/maxogden/websocket-stream.git"
+  },
   "keywords": [
     "websocket",
     "websockets",
