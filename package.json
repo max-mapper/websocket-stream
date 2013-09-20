@@ -52,5 +52,6 @@
       "iphone/6",
       "ipad/6"
     ]
-  }
+  },
+  "license": "MIT"
 }
