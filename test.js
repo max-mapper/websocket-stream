@@ -21,3 +21,24 @@ test('echo server', function(t) {
   });
 
 });
+
+test('emitting not connected errors', function(t) {
+
+  echo.start(function() {
+    var client = websocket(echo.url, echo.options)
+
+    client.on('error', function() {
+      echo.stop(function() {
+        t.end()
+      })
+    })
+
+    client.once('data', function(data) {
+      client.end()
+      client.write('abcde')
+    })
+
+    client.write('hello world')
+  });
+
+});
