@@ -29,6 +29,7 @@ test('emitting not connected errors', function(t) {
 
     client.on('error', function() {
       echo.stop(function() {
+        t.true(true, 'should emit error')
         t.end()
       })
     })
