@@ -26,11 +26,6 @@ function WebsocketStream(server, options) {
     this.ws.onclose = this.onClose.bind(this)
     this.ws.onopen = this.onOpen.bind(this)
   }
-
-  var that = this
-  this._sendCallback = function(err) {
-    if (err) that.onError(err)
-  }
 }
 
 util.inherits(WebsocketStream, stream.Stream)
