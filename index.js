@@ -75,9 +75,13 @@ WebsocketStream.prototype.write = function(data) {
 }
 
 WebsocketStream.prototype._write = function(data) {
-  typeof WebSocket != 'undefined' && this.ws instanceof WebSocket
-    ? this.ws.send(data)
-    : this.ws.send(data, { binary : isBuffer(data) })
+  if (this.ws.readyState == 1)
+    // we are connected
+    typeof WebSocket != 'undefined' && this.ws instanceof WebSocket
+      ? this.ws.send(data)
+      : this.ws.send(data, { binary : isBuffer(data) })
+  else
+    this.emit('error', 'Not connected')
 }
 
 WebsocketStream.prototype.end = function(data) {
