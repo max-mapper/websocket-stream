@@ -1,14 +1,14 @@
-var stream = require('stream')
-var util = require('util')
+var through = require('through')
 var isBuffer = require('isbuffer')
 var WebSocketPoly = require('ws')
 
 function WebsocketStream(server, options) {
   if (!(this instanceof WebsocketStream)) return new WebsocketStream(server, options)
-  stream.Stream.call(this)
+
+  this.stream = through(this.write.bind(this), this.end.bind(this))
+
+  this.stream.websocketStream = this
   this.options = options || {}
-  this.readable = true
-  this.writable = true
   this._buffer = []
  
   if (typeof server === "object") {
@@ -26,14 +26,14 @@ function WebsocketStream(server, options) {
     this.ws.onclose = this.onClose.bind(this)
     this.ws.onopen = this.onOpen.bind(this)
   }
+  
+  return this.stream
 }
-
-util.inherits(WebsocketStream, stream.Stream)
 
 module.exports = WebsocketStream
 module.exports.WebsocketStream = WebsocketStream
 
-WebsocketStream.prototype.onMessage = function(e, flags) {
+WebsocketStream.prototype.onMessage = function(e) {
   var data = e
   if (data.data) data = data.data
   
@@ -41,17 +41,17 @@ WebsocketStream.prototype.onMessage = function(e, flags) {
   var type = this.options.type
   if (type && data instanceof ArrayBuffer) data = new type(data)
   
-  this.emit('data', data, flags)
+  this.stream.queue(data)
 }
 
 WebsocketStream.prototype.onError = function(err) {
-  this.emit('error', err)
+  this.stream.emit('error', err)
 }
 
 WebsocketStream.prototype.onClose = function(err) {
   if (this._destroy) return
-  this.emit('end')
-  this.emit('close')
+  this.stream.emit('end')
+  this.stream.emit('close')
 }
 
 WebsocketStream.prototype.onOpen = function(err) {
@@ -61,8 +61,8 @@ WebsocketStream.prototype.onOpen = function(err) {
     this._write(this._buffer[i])
   }
   this._buffer = undefined
-  this.emit('open')
-  this.emit('connect')
+  this.stream.emit('open')
+  this.stream.emit('connect')
   if (this._end) this.ws.close()
 }
 
@@ -81,16 +81,11 @@ WebsocketStream.prototype._write = function(data) {
       ? this.ws.send(data)
       : this.ws.send(data, { binary : isBuffer(data) })
   else
-    this.emit('error', 'Not connected')
+    this.stream.emit('error', 'Not connected')
 }
 
 WebsocketStream.prototype.end = function(data) {
-  if (data !== undefined) this.write(data)
+  if (data !== undefined) this.stream.queue(data)
   if (this._open) this.ws.close()
   this._end = true
-}
-
-WebsocketStream.prototype.destroy = function() {
-  this._destroy = true
-  this.ws.close()
 }
