@@ -9,14 +9,21 @@ var port = module.exports.port = fake.port
 
 module.exports.url = fake.url
 
-module.exports.start = function(cb) {
+module.exports.start = function(opts, cb) {
   if (server) {
     cb(new Error('already started'));
     return;
   }
 
+  if (typeof opts == 'function') {
+    cb = opts;
+    opts = {};
+  }
+
   server = http.createServer()
-  var wss = new WebSocketServer({server: server})
+  opts.server = server
+
+  var wss = new WebSocketServer(opts)
 
   wss.on('connection', function(ws) {
     var stream = websocket(ws)
