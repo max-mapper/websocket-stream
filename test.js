@@ -43,3 +43,29 @@ test('emitting not connected errors', function(t) {
   });
 
 });
+
+test('passes options to websocket constructor', function(t) {
+  t.plan(2)
+
+  opts = {
+    verifyClient: function verifyClient(info) {
+      t.equal(info.req.headers['x-custom-header'], 'Custom Value')
+      return true
+    }
+  }
+  echo.start(opts, function() {
+    var options = {headers: {'x-custom-header': 'Custom Value'}}
+    var client = websocket(echo.url, options)
+
+    client.on('error', console.error)
+
+    client.on('data', function(data) {
+      t.equal(data, 'hello world')
+      client.end()
+      echo.stop(function() {})
+    })
+
+    client.write('hello world')
+  });
+
+});
