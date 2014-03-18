@@ -1,6 +1,6 @@
 {
   "name": "websocket-stream",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "websockets with the node stream api. works in browser and node",
   "scripts": {
     "start": "browserify demo.js -o demo-bundle.js && node demo-server.js",
