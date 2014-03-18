@@ -35,8 +35,8 @@ module.exports.WebsocketStream = WebsocketStream
 
 WebsocketStream.prototype.onMessage = function(e) {
   var data = e
-  if (data.data) data = data.data
-  
+  if (typeof data.data !== 'undefined') data = data.data
+
   // type must be a Typed Array (ArrayBufferView)
   var type = this.options.type
   if (type && data instanceof ArrayBuffer) data = new type(data)
