@@ -35,7 +35,7 @@ function WebsocketStream(server, options) {
 module.exports = WebsocketStream
 module.exports.WebsocketStream = WebsocketStream
 
-WebSocketStream.prototype.destroy = function() {
+WebsocketStream.prototype.destroy = function() {
   this.ws.close()
 }
 
