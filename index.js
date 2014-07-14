@@ -27,12 +27,17 @@ function WebsocketStream(server, options) {
     this.ws.onclose = this.onClose.bind(this)
     this.ws.onopen = this.onOpen.bind(this)
   }
-  
+
+  this.stream.destroy = this.destroy.bind(this)
   return this.stream
 }
 
 module.exports = WebsocketStream
 module.exports.WebsocketStream = WebsocketStream
+
+WebsocketStream.prototype.destroy = function() {
+  this.ws.close()
+}
 
 WebsocketStream.prototype.onMessage = function(e) {
   var data = e
