@@ -25,6 +25,8 @@ function WebSocketStream(target, options) {
     stream = duplexify()
     socket.addEventListener("open", onready)
   } 
+  
+  stream.socket = socket
 
   socket.addEventListener("close", onclose)
   socket.addEventListener("error", onerror)

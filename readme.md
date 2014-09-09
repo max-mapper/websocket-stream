@@ -2,11 +2,11 @@
 
 [![NPM](https://nodei.co/npm/websocket-stream.png?global=true)](https://nodei.co/npm/websocket-stream/)
 
-Use HTML5 [websockets](https://developer.mozilla.org/en-US/docs/WebSockets) using the Node Streams API. Works in Node or in Browsers.
+Use HTML5 [websockets](https://developer.mozilla.org/en-US/docs/WebSockets) using the Node Streams API.
 
-### In the browser
+### Usage
 
-You can use [browserify](http://github.com/substack/node-browserify) to package this module for browser use.
+This module works in Node or in Browsers that support WebSockets. You can use [browserify](http://github.com/substack/node-browserify) to package this module for browser use.
 
 ```javascript
 var websocket = require('websocket-stream')
@@ -15,6 +15,8 @@ ws.pipe(somewhereAwesome)
 ```
 
 In the example above `ws` is a duplex stream. That means you can pipe output to anything that accepts streams. You can also pipe data into streams (such as a webcam feed or audio data). 
+
+The underlying `WebSocket` instance is available as `ws.socket`.
 
 ### On the server
 
@@ -30,20 +32,19 @@ wss.on('connection', function(ws) {
 })
 ```
 
-## run the tests
+## Run the tests
 
-### server-side tests
+### Server-side tests
 
 ```
 npm test
-
 ```
 
-### client side tests
+### Client-side tests
 
-first start the echo server by running `node test-server.js`
+First start the echo server by running `node test-server.js`
 
-then run `npm start` and open `localhost:9966` in your browser and open the Dev Tools console to see test output
+Then run `npm start` and open `localhost:9966` in your browser and open the Dev Tools console to see test output.
 
 ## license
 
