@@ -1,11 +1,10 @@
 {
   "name": "websocket-stream",
-  "version": "0.6.0",
-  "description": "websockets with the node stream api. works in browser and node",
+  "version": "1.0.0",
+  "description": "Use websockets with the node streams API. Works in browser and node",
   "scripts": {
-    "start": "browserify demo.js -o demo-bundle.js && node demo-server.js",
     "test": "node test.js",
-    "echo": "node echo-server.js"
+    "start": "beefy test-client.js"
   },
   "repository": {
     "type": "git",
@@ -23,35 +22,18 @@
     "email": "max@maxogden.com"
   },
   "dependencies": {
-    "isbuffer": "0.0.0",
-    "ws": "~0.4.30",
-    "through": "~2.3.4"
+    "duplexify": "^3.2.0",
+    "through2": "^0.6.1",
+    "ws": "^0.4.32",
+    "xtend": "^4.0.0"
   },
   "devDependencies": {
-    "el-streamo": "1.0.0",
-    "ecstatic": "0.4.2",
-    "browserify": "2.14.1",
-    "stringstream": "0.0.4",
-    "tape": "~1.0.4"
+    "beefy": "^2.1.1",
+    "browserify": "^5.11.1",
+    "tape": "^2.14.0"
   },
   "optionalDependencies": {},
-  "engines": {
-    "node": ">=0.8"
-  },
   "browser": {
     "./echo-server.js": "./fake-server.js"
-  },
-  "testling": {
-    "files": "test.js",
-    "server": "node echo-server.js",
-    "browsers": [
-      "ie/6..latest",
-      "chrome/20..latest",
-      "firefox/10..latest",
-      "safari/latest",
-      "opera/11.0..latest",
-      "iphone/6",
-      "ipad/6"
-    ]
   }
 }

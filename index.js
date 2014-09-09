@@ -1,97 +1,63 @@
-var through = require('through')
-var isBuffer = require('isbuffer')
-var WebSocketPoly = require('ws')
+var through = require('through2')
+var duplexify = require('duplexify')
+var WS = require('ws')
 
-function WebsocketStream(server, options) {
-  if (!(this instanceof WebsocketStream)) return new WebsocketStream(server, options)
+module.exports = WebSocketStream
 
-  this.stream = through(this.write.bind(this), this.end.bind(this))
-
-  this.stream.websocketStream = this
-  this.options = options || {}
-  this._buffer = []
- 
-  if (typeof server === "object") {
-    this.ws = server
-    this.ws.on('message', this.onMessage.bind(this))
-    this.ws.on('error', this.onError.bind(this))
-    this.ws.on('close', this.onClose.bind(this))
-    this.ws.on('open', this.onOpen.bind(this))
-    if (this.ws.readyState === 1) this._open = true
-  } else {
-    var opts = (process.title === 'browser') ? this.options.protocol : this.options
-    this.ws = new WebSocketPoly(server, opts)
-    this.ws.binaryType = this.options.binaryType || 'arraybuffer'
-    this.ws.onmessage = this.onMessage.bind(this)
-    this.ws.onerror = this.onError.bind(this)
-    this.ws.onclose = this.onClose.bind(this)
-    this.ws.onopen = this.onOpen.bind(this)
-  }
-
-  this.stream.destroy = this.destroy.bind(this)
-  return this.stream
-}
-
-module.exports = WebsocketStream
-module.exports.WebsocketStream = WebsocketStream
-
-WebsocketStream.prototype.destroy = function() {
-  this.ws.close()
-}
-
-WebsocketStream.prototype.onMessage = function(e) {
-  var data = e
-  if (typeof data.data !== 'undefined') data = data.data
-
-  // type must be a Typed Array (ArrayBufferView)
-  var type = this.options.type
-  if (type && data instanceof ArrayBuffer) data = new type(data)
+function WebSocketStream(target, options) {
+  if (!options) options = {}
+  var stream, socket
+  var proxy = through(socketWrite, socketEnd)
   
-  this.stream.queue(data)
-}
-
-WebsocketStream.prototype.onError = function(err) {
-  this.stream.emit('error', err)
-}
-
-WebsocketStream.prototype.onClose = function(err) {
-  if (this._destroy) return
-  this.stream.emit('end')
-  this.stream.emit('close')
-}
-
-WebsocketStream.prototype.onOpen = function(err) {
-  if (this._destroy) return
-  this._open = true
-  for (var i = 0; i < this._buffer.length; i++) {
-    this._write(this._buffer[i])
-  }
-  this._buffer = undefined
-  this.stream.emit('open')
-  this.stream.emit('connect')
-  if (this._end) this.ws.close()
-}
-
-WebsocketStream.prototype.write = function(data) {
-  if (!this._open) {
-    this._buffer.push(data)
+  // use existing WebSocket object that was passed in
+  if (typeof target === 'object') {
+    socket = target
+  // otherwise make a new one
   } else {
-    this._write(data)
+    socket = new WS(target, options)
+    socket.binaryType = 'arraybuffer'
   }
-}
+    
+  // was already open when passed in
+  if (socket.readyState === 1) {
+    stream = proxy
+  } else {
+    stream = duplexify()
+    socket.addEventListener("open", onready)
+  } 
 
-WebsocketStream.prototype._write = function(data) {
-  if (this.ws.readyState == 1)
-    // we are connected
-    typeof WebSocket != 'undefined' && this.ws instanceof WebSocket
-      ? this.ws.send(data)
-      : this.ws.send(data, { binary : isBuffer(data) })
-  else
-    this.stream.emit('error', 'Not connected')
-}
-
-WebsocketStream.prototype.end = function(data) {
-  if (data !== undefined) this.stream.queue(data)
-  if (this._open) this.ws.close()
-  this._end = true
+  socket.addEventListener("close", onclose)
+  socket.addEventListener("error", onerror)
+  socket.addEventListener("message", onmessage)
+    
+  function socketWrite(chunk, enc, next) {
+    socket.send(chunk)
+    next()
+  }
+  
+  function socketEnd(done) {
+    socket.close()
+    done()
+  }
+  
+  function onready() {
+    stream.setReadable(proxy)
+    stream.setWritable(proxy)
+  }
+  
+  function onclose() {
+    stream.destroy()
+  }
+  
+  function onerror(err) {
+    stream.destroy(err)
+  }
+  
+  function onmessage(event) {
+    var data = event.data
+    if (data instanceof ArrayBuffer) data = new Buffer(new Uint8Array(data))
+    proxy.push(data)
+  }
+  
+  return stream
 }

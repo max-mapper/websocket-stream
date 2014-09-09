@@ -1,12 +1,12 @@
 # websocket-stream
 
-    npm install websocket-stream
+[![NPM](https://nodei.co/npm/websocket-stream.png?global=true)](https://nodei.co/npm/websocket-stream/)
 
-use HTML5 [websockets](https://developer.mozilla.org/en-US/docs/WebSockets) the node way -- with streams
+Use HTML5 [websockets](https://developer.mozilla.org/en-US/docs/WebSockets) using the Node Streams API. Works in Node or in Browsers.
 
-# in the browser
+### In the browser
 
-you can use [browserify](http://github.com/substack/node-browserify) to package this module for browser use.
+You can use [browserify](http://github.com/substack/node-browserify) to package this module for browser use.
 
 ```javascript
 var websocket = require('websocket-stream')
@@ -14,19 +14,11 @@ var ws = websocket('ws://realtimecats.com')
 ws.pipe(somewhereAwesome)
 ```
 
-`ws` is a stream and speaks stream events: `data`, `error` and `end`. that means you can pipe output to anything that accepts streams. you can also pipe data into streams (such as a webcam feed or audio data)
+In the example above `ws` is a duplex stream. That means you can pipe output to anything that accepts streams. You can also pipe data into streams (such as a webcam feed or audio data). 
 
-### browserify steps
-```javascript
-npm install -g browserify // install browserify
-cd node_modules/websocket-stream
-npm install . // install dev dependencies
-browserify index.js -s websocket-stream > websocket-stream.js // require websocket-stream.js in your client-side app
-```
+### On the server
 
-# on the server
-
-using the [`ws`](http://npmjs.org/ws) module you can make a websocket server and use this module to get websocket streams on the server:
+Using the [`ws`](http://npmjs.org/ws) module you can make a websocket server and use this module to get websocket streams on the server:
 
 ```javascript
 var WebSocketServer = require('ws').Server
@@ -38,31 +30,20 @@ wss.on('connection', function(ws) {
 })
 ```
 
-## options
+## run the tests
 
-pass in options as the second argument like this:
+### server-side tests
 
-```js
-websocketStream('ws://foobar', { type: someTypedArray })
+```
+npm test
 
-// e.g. {type: Uint8Array} means you'll get Uint8Arrays back instead of ArrayBuffers
 ```
 
-possible options are...
+### client side tests
 
-```js
-{ 
-  protocol: // optional, string, specify websocket protocol
-  type: // optional, TypedArray object, wraps the ArrayBuffer before emitting
-}
-```
+first start the echo server by running `node test-server.js`
 
-### binary sockets
-
-To send binary data just write a [Buffer](nodejs.org/api/buffer.html) or [TypedArray](https://developer.mozilla.org/en-US/docs/JavaScript/Typed_arrays) to the stream.
-On the other end you will receive [Buffer](nodejs.org/api/buffer.html) instances if it's the server and [ArrayBuffer](https://developer.mozilla.org/en-US/docs/JavaScript/Typed_arrays/ArrayBuffer) instances if it's the client. The client will default to `ArrayBuffer` objects but can also be configured to receive `Blob`s.
-
-If you write binary data to a websocket on the server, the client will receive binary objects. Same thing goes for strings. 
+then run `npm start` and open `localhost:9966` in your browser and open the Dev Tools console to see test output
 
 ## license
 

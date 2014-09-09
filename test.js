@@ -10,7 +10,8 @@ test('echo server', function(t) {
     client.on('error', console.error)
 
     client.on('data', function(data) {
-      t.equal(data, 'hello world')
+      t.ok(Buffer.isBuffer(data), 'is a buffer')
+      t.equal(data.toString(), 'hello world')
       client.end()
       echo.stop(function() {
         t.end()
@@ -45,7 +46,7 @@ test('emitting not connected errors', function(t) {
 });
 
 test('passes options to websocket constructor', function(t) {
-  t.plan(2)
+  t.plan(3)
 
   opts = {
     verifyClient: function verifyClient(info) {
@@ -60,7 +61,8 @@ test('passes options to websocket constructor', function(t) {
     client.on('error', console.error)
 
     client.on('data', function(data) {
-      t.equal(data, 'hello world')
+      t.ok(Buffer.isBuffer(data), 'is a buffer')
+      t.equal(data.toString(), 'hello world')
       client.end()
       echo.stop(function() {})
     })
