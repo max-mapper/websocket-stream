@@ -7,7 +7,7 @@ module.exports = WebSocketStream
 function WebSocketStream(target, protocols) {
   var stream, socket
   var proxy = through(socketWrite, socketEnd)
-  
+
   // use existing WebSocket object that was passed in
   if (typeof target === 'object') {
     socket = target
@@ -16,50 +16,56 @@ function WebSocketStream(target, protocols) {
     socket = new WS(target, protocols)
     socket.binaryType = 'arraybuffer'
   }
-    
+
   // was already open when passed in
   if (socket.readyState === 1) {
     stream = proxy
   } else {
     stream = duplexify()
     socket.addEventListener("open", onready)
-  } 
-  
+  }
+
   stream.socket = socket
 
   socket.addEventListener("close", onclose)
   socket.addEventListener("error", onerror)
   socket.addEventListener("message", onmessage)
-    
+
+  proxy.destroy = destroy;
+
   function socketWrite(chunk, enc, next) {
     socket.send(chunk)
     next()
   }
-  
+
   function socketEnd(done) {
     socket.close()
     done()
   }
-  
+
   function onready() {
     stream.setReadable(proxy)
     stream.setWritable(proxy)
     stream.emit('connect')
   }
-  
+
   function onclose() {
     stream.destroy()
   }
-  
+
   function onerror(err) {
     stream.destroy(err)
   }
-  
+
   function onmessage(event) {
     var data = event.data
     if (data instanceof ArrayBuffer) data = new Buffer(new Uint8Array(data))
     proxy.push(data)
   }
-  
+
+  function destroy() {
+    socket.close()
+  }
+
   return stream
 }

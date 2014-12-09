@@ -71,3 +71,23 @@ test('passes options to websocket constructor', function(t) {
   });
 
 });
+
+
+test('destroy', function(t) {
+  t.plan(1)
+
+  echo.start(function() {
+    var client = websocket(echo.url, echo.options)
+
+    client.on('close', function() {
+      echo.stop(function() {
+        t.pass('destroyed')
+      })
+    })
+
+    setTimeout(function() {
+      client.destroy();
+    }, 200);
+  });
+
+});
