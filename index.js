@@ -54,6 +54,8 @@ function WebSocketStream(target, protocols) {
   }
 
   function onerror(err) {
+    if (err)
+      stream.emit('error', err)
     stream.destroy(err)
   }
 
@@ -64,6 +66,7 @@ function WebSocketStream(target, protocols) {
   }
 
   function destroy() {
+    proxy.emit('close')
     socket.close()
   }
 

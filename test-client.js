@@ -1,4 +1,4 @@
-var ws = require('websocket-stream')
+var ws = require('./')
 var test = require('tape')
 
 test('echo works', function(t) {
