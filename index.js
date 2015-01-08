@@ -34,8 +34,12 @@ function WebSocketStream(target, protocols) {
   proxy.destroy = destroy;
 
   function socketWrite(chunk, enc, next) {
-    socket.send(chunk)
-    next()
+    try {
+      socket.send(chunk)
+      next()
+    } catch(err) {
+      onerror(err)
+    }
   }
 
   function socketEnd(done) {
@@ -54,6 +58,10 @@ function WebSocketStream(target, protocols) {
   }
 
   function onerror(err) {
+    if (stream === proxy && err) {
+      stream.emit('error', err)
+    }
+
     stream.destroy(err)
   }
 

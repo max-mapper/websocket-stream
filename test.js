@@ -1,6 +1,8 @@
 var test = require('tape')
 var websocket = require('./')
 var echo = require("./echo-server")
+var WebSocketServer = require('ws').Server
+var http = require('http')
 
 test('echo server', function(t) {
 
@@ -91,3 +93,28 @@ test('destroy', function(t) {
   });
 
 });
+
+test('emit sending errors if the socket is closed by the other party', function(t) {
+
+  var server = http.createServer()
+  var wss = new WebSocketServer({ server: server })
+
+  server.listen(8344, function() {
+    var client = websocket('ws://localhost:8344')
+
+    wss.on('connection', function(ws) {
+      var stream = websocket(ws)
+
+      client.destroy()
+
+      setTimeout(function() {
+        stream.write('hello world')
+      }, 50)
+
+      stream.on('error', function(err) {
+        t.ok(err, 'client errors')
+        server.close(t.end.bind(t))
+      })
+    })
+  })
+})
