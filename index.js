@@ -31,7 +31,7 @@ function WebSocketStream(target, protocols) {
   socket.addEventListener("error", onerror)
   socket.addEventListener("message", onmessage)
 
-  proxy.on('close', destroy);
+  proxy.on('close', destroy)
 
   function socketWrite(chunk, enc, next) {
     socket.send(chunk, next)
