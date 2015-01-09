@@ -21,9 +21,9 @@ test('echo server', function(t) {
     })
 
     client.write('hello world')
-  });
+  })
 
-});
+})
 
 test('emitting not connected errors', function(t) {
 
@@ -43,9 +43,9 @@ test('emitting not connected errors', function(t) {
     })
 
     client.write('hello world')
-  });
+  })
 
-});
+})
 
 test('passes options to websocket constructor', function(t) {
   t.plan(3)
@@ -70,9 +70,9 @@ test('passes options to websocket constructor', function(t) {
     })
 
     client.write('hello world')
-  });
+  })
 
-});
+})
 
 
 test('destroy', function(t) {
@@ -88,11 +88,11 @@ test('destroy', function(t) {
     })
 
     setTimeout(function() {
-      client.destroy();
-    }, 200);
-  });
+      client.destroy()
+    }, 200)
+  })
 
-});
+})
 
 test('emit sending errors if the socket is closed by the other party', function(t) {
 
@@ -117,4 +117,55 @@ test('emit sending errors if the socket is closed by the other party', function(
       })
     })
   })
+})
+
+test('destroy client pipe should close server pipe', function(t) {
+  t.plan(1)
+
+  var clientDestroy = function() {
+    var client = websocket(echo.url, echo.options)
+    client.on('data', function(o) {
+      client.destroy()
+    })
+    client.write(new Buffer('hello'))
+  }
+
+  var opts = {}
+  var server = http.createServer()
+  opts.server = server
+  var wss = new WebSocketServer(opts)
+  wss.on('connection', function(ws) {
+    var stream = websocket(ws)
+    stream.on('close', function() {
+      server.close(function() {
+        t.pass('close is called')
+      })
+    })
+    stream.pipe(stream)
+  })
+  server.listen(echo.port, clientDestroy)
+})
+
+
+test('error on socket should forward it to pipe', function(t) {
+  t.plan(1)
+
+  var clientConnect = function() {
+    websocket(echo.url, echo.options)
+  }
+
+  var opts = {}
+  var server = http.createServer()
+  opts.server = server
+  var wss = new WebSocketServer(opts)
+  wss.on('connection', function(ws) {
+    var stream = websocket(ws)
+    stream.on('error', function() {
+      server.close(function() {
+        t.pass('error is called')
+      })
+    })
+    stream.socket.emit('error', 'Fake error')
+  })
+  server.listen(echo.port, clientConnect)
 })
