@@ -31,11 +31,10 @@ function WebSocketStream(target, protocols) {
   socket.addEventListener("error", onerror)
   socket.addEventListener("message", onmessage)
 
-  proxy.destroy = destroy;
+  proxy.on('close', destroy);
 
   function socketWrite(chunk, enc, next) {
-    socket.send(chunk)
-    next()
+    socket.send(chunk, next)
   }
 
   function socketEnd(done) {

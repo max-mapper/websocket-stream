@@ -1,4 +1,4 @@
-var ws = require('websocket-stream')
+var ws = require('./')
 var test = require('tape')
 
 test('echo works', function(t) {
@@ -8,5 +8,5 @@ test('echo works', function(t) {
     stream.destroy()
     t.end()
   })
-  stream.write(new Buffer('hello'))  
+  stream.write(new Buffer('hello'))
 })
