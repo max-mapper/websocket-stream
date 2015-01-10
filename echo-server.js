@@ -19,13 +19,13 @@ module.exports.start = function(opts, cb) {
   server = http.createServer()
   opts.server = server
 
-  var wss = new websocket.Server(opts)
-
-  wss.on('stream', function(stream) {
-    stream.pipe(stream) // echo
-  })
+  websocket.createServer(opts, echo)
 
   server.listen(port, cb)
+
+  function echo(stream) {
+    stream.pipe(stream)
+  }
 }
 
 module.exports.stop = function(cb) {

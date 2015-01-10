@@ -5,9 +5,9 @@ var stream = require('./stream')
 
 module.exports = Server
 
-function Server(opts) {
+function Server(opts, cb) {
   if (!(this instanceof Server)) {
-    return new Server(opts)
+    return new Server(opts, cb)
   }
 
   WebSocketServer.call(this, opts)
@@ -19,6 +19,10 @@ function Server(opts) {
       })
     }
   })
+
+  if (cb) {
+    this.on('stream', cb)
+  }
 }
 
 inherits(Server, WebSocketServer)
