@@ -1,4 +1,3 @@
-var WebSocketServer = require('ws').Server
 var http = require('http')
 var websocket = require('./')
 var server = null
@@ -20,11 +19,9 @@ module.exports.start = function(opts, cb) {
   server = http.createServer()
   opts.server = server
 
-  var wss = new WebSocketServer(opts)
+  var wss = new websocket.Server(opts)
 
-  wss.on('connection', function(ws) {
-    var stream = websocket(ws)
-
+  wss.on('stream', function(stream) {
     stream.pipe(stream) // echo
   })
 
