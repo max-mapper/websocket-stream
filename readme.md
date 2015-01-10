@@ -24,8 +24,9 @@ Using the [`ws`](http://npmjs.org/ws) module you can make a websocket server and
 
 ```javascript
 var websocket = require('websocket-stream')
-var wss = new websocket.Server({server: someHTTPServer})
-wss.on('stream', function(stream) {
+var wss = websocket.createServer({server: someHTTPServer}, handle)
+
+function handle(stream) {
   fs.createReadStream('bigdata.json').pipe(stream)
 })
 ```
