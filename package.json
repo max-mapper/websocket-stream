@@ -23,8 +23,9 @@
   },
   "dependencies": {
     "duplexify": "^3.2.0",
+    "inherits": "^2.0.1",
     "through2": "^0.6.1",
-    "ws": "^0.4.32",
+    "ws": "^0.6.5",
     "xtend": "^4.0.0"
   },
   "devDependencies": {
@@ -34,6 +35,7 @@
   },
   "optionalDependencies": {},
   "browser": {
-    "./echo-server.js": "./fake-server.js"
+    "./echo-server.js": "./fake-server.js",
+    "./index.js": "stream.js"
   }
 }

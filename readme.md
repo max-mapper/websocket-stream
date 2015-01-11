@@ -14,7 +14,7 @@ var ws = websocket('ws://realtimecats.com')
 ws.pipe(somewhereAwesome)
 ```
 
-In the example above `ws` is a duplex stream. That means you can pipe output to anything that accepts streams. You can also pipe data into streams (such as a webcam feed or audio data). 
+In the example above `ws` is a duplex stream. That means you can pipe output to anything that accepts streams. You can also pipe data into streams (such as a webcam feed or audio data).
 
 The underlying `WebSocket` instance is available as `ws.socket`.
 
@@ -23,11 +23,10 @@ The underlying `WebSocket` instance is available as `ws.socket`.
 Using the [`ws`](http://npmjs.org/ws) module you can make a websocket server and use this module to get websocket streams on the server:
 
 ```javascript
-var WebSocketServer = require('ws').Server
 var websocket = require('websocket-stream')
-var wss = new WebSocketServer({server: someHTTPServer})
-wss.on('connection', function(ws) {
-  var stream = websocket(ws)
+var wss = websocket.createServer({server: someHTTPServer}, handle)
+
+function handle(stream) {
   fs.createReadStream('bigdata.json').pipe(stream)
 })
 ```
