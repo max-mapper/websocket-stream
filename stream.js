@@ -41,10 +41,11 @@ function WebSocketStream(target, protocols) {
   function socketWriteBrowser(chunk, enc, next) {
     try {
       socket.send(chunk)
-      next()
     } catch(err) {
-      next(err)
+      return next(err)
     }
+
+    next()
   }
 
   function socketEnd(done) {
