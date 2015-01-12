@@ -6,6 +6,7 @@ module.exports = WebSocketStream
 
 function WebSocketStream(target, protocols) {
   var stream, socket
+  var socketWrite = process.title === 'browser' ? socketWriteBrowser : socketWriteNode
   var proxy = through(socketWrite, socketEnd)
 
   // use existing WebSocket object that was passed in
@@ -33,8 +34,17 @@ function WebSocketStream(target, protocols) {
 
   proxy.on('close', destroy)
 
-  function socketWrite(chunk, enc, next) {
+  function socketWriteNode(chunk, enc, next) {
     socket.send(chunk, next)
+  }
+
+  function socketWriteBrowser(chunk, enc, next) {
+    try {
+      socket.send(chunk)
+      next()
+    } catch(err) {
+      next(err)
+    }
   }
 
   function socketEnd(done) {
