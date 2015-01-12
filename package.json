@@ -1,6 +1,6 @@
 {
   "name": "websocket-stream",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Use websockets with the node streams API. Works in browser and node",
   "scripts": {
     "test": "node test.js",
