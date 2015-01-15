@@ -36,6 +36,6 @@
   "optionalDependencies": {},
   "browser": {
     "./echo-server.js": "./fake-server.js",
-    "./index.js": "stream.js"
+    "./index.js": "./stream.js"
   }
 }
