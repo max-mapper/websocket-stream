@@ -56,7 +56,7 @@ function WebSocketStream(target, protocols) {
   function onready() {
     stream.setReadable(proxy)
     stream.setWritable(proxy)
-    stream.emit('connect')
+    stream.emit('open')
   }
 
   function onclose() {
