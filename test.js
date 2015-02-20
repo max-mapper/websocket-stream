@@ -165,7 +165,7 @@ test('error on socket should forward it to pipe', function(t) {
         t.pass('error is called')
       })
     })
-    stream.socket.emit('error', 'Fake error')
+    stream.socket.emit('error', new Error('Fake error'))
   })
   server.listen(echo.port, clientConnect)
 })
