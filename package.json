@@ -25,7 +25,7 @@
     "duplexify": "^3.2.0",
     "inherits": "^2.0.1",
     "through2": "^0.6.1",
-    "ws": "^0.6.5",
+    "ws": "^0.7.1",
     "xtend": "^4.0.0"
   },
   "devDependencies": {
