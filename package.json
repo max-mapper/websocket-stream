@@ -31,7 +31,7 @@
   "devDependencies": {
     "beefy": "^2.1.1",
     "browserify": "^5.11.1",
-    "tape": "^2.14.0"
+    "tape": "^3.5.0"
   },
   "optionalDependencies": {},
   "browser": {

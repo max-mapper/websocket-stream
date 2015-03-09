@@ -50,7 +50,7 @@ test('emitting not connected errors', function(t) {
 test('passes options to websocket constructor', function(t) {
   t.plan(3)
 
-  opts = {
+  var opts = {
     verifyClient: function verifyClient(info) {
       t.equal(info.req.headers['x-custom-header'], 'Custom Value')
       return true
@@ -58,7 +58,7 @@ test('passes options to websocket constructor', function(t) {
   }
   echo.start(opts, function() {
     var options = {headers: {'x-custom-header': 'Custom Value'}}
-    var client = websocket(echo.url, options)
+    var client = websocket(echo.url, null, options)
 
     client.on('error', console.error)
 
