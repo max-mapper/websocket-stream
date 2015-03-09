@@ -4,7 +4,7 @@ var WS = require('ws')
 
 module.exports = WebSocketStream
 
-function WebSocketStream(target, protocols) {
+function WebSocketStream(target, protocols, options) {
   var stream, socket
   var socketWrite = process.title === 'browser' ? socketWriteBrowser : socketWriteNode
   var proxy = through(socketWrite, socketEnd)
@@ -14,7 +14,7 @@ function WebSocketStream(target, protocols) {
     socket = target
   // otherwise make a new one
   } else {
-    socket = new WS(target, protocols)
+    socket = new WS(target, protocols, options)
     socket.binaryType = 'arraybuffer'
   }
 
