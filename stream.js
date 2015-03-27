@@ -60,6 +60,7 @@ function WebSocketStream(target, protocols) {
   }
 
   function onclose() {
+    stream.end();
     stream.destroy()
   }
 
