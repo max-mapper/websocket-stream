@@ -3,6 +3,7 @@ var websocket = require('./')
 var echo = require("./echo-server")
 var WebSocketServer = require('ws').Server
 var http = require('http')
+var concat = require('concat-stream')
 
 test('echo server', function(t) {
 
@@ -168,4 +169,22 @@ test('error on socket should forward it to pipe', function(t) {
     stream.socket.emit('error', new Error('Fake error'))
   })
   server.listen(echo.port, clientConnect)
+})
+
+test('stream end', function(t) {
+  t.plan(1)
+ 
+  var server = http.createServer()
+  websocket.createServer({ server: server }, handle)
+ 
+  function handle (stream) {
+    stream.pipe(concat(function (body) {
+      t.equal(body.toString(), 'pizza cats\n')
+      server.close()
+    }))
+  }
+  server.listen(0, function () {
+    var w = websocket('ws://localhost:' + server.address().port)
+    w.end('pizza cats\n')
+  })
 })
