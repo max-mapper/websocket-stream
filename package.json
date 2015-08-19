@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/maxogden/websocket-stream.git"
+    "url": "git+ssh://git@github.com/maxogden/websocket-stream.git"
   },
   "keywords": [
     "websocket",
@@ -39,5 +39,12 @@
   "browser": {
     "./echo-server.js": "./fake-server.js",
     "./index.js": "./stream.js"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/maxogden/websocket-stream/issues"
+  },
+  "homepage": "https://github.com/maxogden/websocket-stream#readme",
+  "main": "index.js",
+  "author": "",
+  "license": "BSD-2-Clause"
 }
