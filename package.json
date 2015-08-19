@@ -1,6 +1,6 @@
 {
   "name": "websocket-stream",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "license": "BSD-2-Clause",
   "description": "Use websockets with the node streams API. Works in browser and node",
   "scripts": {
@@ -45,6 +45,5 @@
   },
   "homepage": "https://github.com/maxogden/websocket-stream#readme",
   "main": "index.js",
-  "author": "",
-  "license": "BSD-2-Clause"
+  "author": ""
 }
