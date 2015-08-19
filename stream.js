@@ -7,7 +7,7 @@ module.exports = WebSocketStream
 function WebSocketStream(target, protocols) {
   var stream, socket
   var socketWrite = process.title === 'browser' ? socketWriteBrowser : socketWriteNode
-  var proxy = through(socketWrite, socketEnd)
+  var proxy = through.obj(socketWrite, socketEnd)
 
   // use existing WebSocket object that was passed in
   if (typeof target === 'object') {
@@ -22,7 +22,7 @@ function WebSocketStream(target, protocols) {
   if (socket.readyState === 1) {
     stream = proxy
   } else {
-    stream = duplexify()
+    stream = duplexify.obj()
     socket.addEventListener("open", onready)
   }
 
@@ -71,6 +71,7 @@ function WebSocketStream(target, protocols) {
   function onmessage(event) {
     var data = event.data
     if (data instanceof ArrayBuffer) data = new Buffer(new Uint8Array(data))
+    else data = new Buffer(data)
     proxy.push(data)
   }
 
