@@ -35,11 +35,15 @@ function WebSocketStream(target, protocols) {
   proxy.on('close', destroy)
 
   function socketWriteNode(chunk, enc, next) {
+    if (typeof chunk !== 'string')
+      chunk = JSON.stringify(chunk)
     socket.send(chunk, next)
   }
 
   function socketWriteBrowser(chunk, enc, next) {
     try {
+      if (typeof chunk !== 'string')
+        chunk = JSON.stringify(chunk)
       socket.send(chunk)
     } catch(err) {
       return next(err)
