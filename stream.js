@@ -39,6 +39,11 @@ function WebSocketStream(target, protocols) {
   }
 
   function socketWriteBrowser(chunk, enc, next) {
+    if (socket.bufferedAmount > 16384) {
+      setTimeout(socketWriteBrowser, 10, chunk, enc, next)
+      return
+    }
+
     try {
       socket.send(chunk)
     } catch(err) {
