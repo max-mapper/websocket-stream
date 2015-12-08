@@ -4,17 +4,30 @@ var WS = require('ws')
 
 module.exports = WebSocketStream
 
-function WebSocketStream(target, protocols) {
+function WebSocketStream(target, protocols, options) {
   var stream, socket
   var socketWrite = process.title === 'browser' ? socketWriteBrowser : socketWriteNode
   var proxy = through.obj(socketWrite, socketEnd)
+
+  if (protocols && !Array.isArray(protocols) && 'object' === typeof protocols) {
+    // accept the "options" Object as the 2nd argument
+    options = protocols
+    protocols = null
+  }
+
+  if (!options) options = {}
+
+  // browser only: sets the maximum socket buffer size before throttling
+  var bufferSize = options.browserBufferSize || 1024 * 512
+  // browser only: how long to wait when throttling
+  var bufferTimeout = options.browserBufferTimeout || 1000
 
   // use existing WebSocket object that was passed in
   if (typeof target === 'object') {
     socket = target
   // otherwise make a new one
   } else {
-    socket = new WS(target, protocols)
+    socket = new WS(target, protocols, options)
     socket.binaryType = 'arraybuffer'
   }
 
@@ -39,8 +52,8 @@ function WebSocketStream(target, protocols) {
   }
 
   function socketWriteBrowser(chunk, enc, next) {
-    if (socket.bufferedAmount > 16384) {
-      setTimeout(socketWriteBrowser, 10, chunk, enc, next)
+    if (socket.bufferedAmount > bufferSize) {
+      setTimeout(socketWriteBrowser, bufferTimeout, chunk, enc, next)
       return
     }
 
