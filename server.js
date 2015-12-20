@@ -12,8 +12,10 @@ function Server(opts, cb) {
 
   WebSocketServer.call(this, opts)
 
+  var proxied = false
   this.on('newListener', function(event) {
-    if (event === 'stream') {
+    if (!proxied && event === 'stream') {
+      proxied = true
       this.on('connection', function(conn) {
         this.emit('stream', stream(conn))
       })
