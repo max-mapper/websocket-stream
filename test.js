@@ -188,3 +188,21 @@ test('stream end', function(t) {
     w.end('pizza cats\n')
   })
 })
+
+test('stream handlers should fire once per connection', function(t) {
+  t.plan(1)
+
+  var server = http.createServer()
+  var wss = websocket.createServer({ server: server }, function() {
+    server.close(function() {
+      t.equal(m, 1)
+    })
+  })
+
+  var m = 0
+  wss.on('stream', function() { m++ })
+  server.listen(0, function() {
+    var w = websocket('ws://localhost:' + server.address().port)
+    w.end('pizza cats\n')
+  })
+})
