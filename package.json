@@ -38,7 +38,8 @@
   "optionalDependencies": {},
   "browser": {
     "./echo-server.js": "./fake-server.js",
-    "./index.js": "./stream.js"
+    "./index.js": "./stream.js",
+    "ws": "./ws-fallback.js"
   },
   "bugs": {
     "url": "https://github.com/maxogden/websocket-stream/issues"
