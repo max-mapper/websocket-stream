@@ -95,6 +95,25 @@ test('destroy', function(t) {
 
 })
 
+test('drain', function(t) {
+  t.plan(1)
+
+  echo.start(function() {
+    var client = websocket(echo.url, echo.options)
+
+    client.on('drain', function() {
+      client.destroy()
+      echo.stop(function() {
+        t.pass('drained')
+      })
+    })
+
+    // write until buffer is full
+    while (client.write('foobar')) {}
+  })
+
+})
+
 test('emit sending errors if the socket is closed by the other party', function(t) {
 
   var server = http.createServer()
