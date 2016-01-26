@@ -33,8 +33,8 @@ function WebSocketStream(target, protocols, options) {
   } else {
     // special constructor treatment for native websockets in browsers, see
     // https://github.com/maxogden/websocket-stream/issues/82
-    if (isNative && isBrowser && !protocols) {
-      socket = new WS(target)
+    if (isNative && isBrowser) {
+      socket = new WS(target, protocols)
     } else {
       socket = new WS(target, protocols, options)
     }
