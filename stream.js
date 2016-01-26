@@ -6,7 +6,10 @@ module.exports = WebSocketStream
 
 function WebSocketStream(target, protocols, options) {
   var stream, socket
-  var socketWrite = process.title === 'browser' ? socketWriteBrowser : socketWriteNode
+
+  var isBrowser = process.title === 'browser'
+  var isNative = !!global.WebSocket
+  var socketWrite = isBrowser ? socketWriteBrowser : socketWriteNode
   var proxy = through.obj(socketWrite, socketEnd)
 
   if (protocols && !Array.isArray(protocols) && 'object' === typeof protocols) {
@@ -19,6 +22,7 @@ function WebSocketStream(target, protocols, options) {
 
   // browser only: sets the maximum socket buffer size before throttling
   var bufferSize = options.browserBufferSize || 1024 * 512
+
   // browser only: how long to wait when throttling
   var bufferTimeout = options.browserBufferTimeout || 1000
 
@@ -27,7 +31,14 @@ function WebSocketStream(target, protocols, options) {
     socket = target
   // otherwise make a new one
   } else {
-    socket = new WS(target, protocols, options)
+    // special constructor treatment for native websockets in browsers, see
+    // https://github.com/maxogden/websocket-stream/issues/82
+    if (isNative && isBrowser) {
+      socket = new WS(target, protocols)
+    } else {
+      socket = new WS(target, protocols, options)
+    }
+
     socket.binaryType = 'arraybuffer'
   }
 
