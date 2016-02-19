@@ -8,7 +8,7 @@ function WebSocketStream(target, protocols, options) {
   var stream, socket
 
   var isBrowser = process.title === 'browser'
-  var isNative = !!global.WebSocket
+  var isNative = !!(global.WebSocket || global.MozWebSocket)
   var socketWrite = isBrowser ? socketWriteBrowser : socketWriteNode
   var proxy = through.obj(socketWrite, socketEnd)
 
