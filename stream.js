@@ -43,18 +43,18 @@ function WebSocketStream(target, protocols, options) {
   }
 
   // was already open when passed in
-  if (socket.readyState === 1) {
+  if (socket.readyState === WS.OPEN) {
     stream = proxy
   } else {
     stream = duplexify.obj()
-    socket.addEventListener("open", onready)
+    socket.onopen = onopen
   }
 
   stream.socket = socket
 
-  socket.addEventListener("close", onclose)
-  socket.addEventListener("error", onerror)
-  socket.addEventListener("message", onmessage)
+  socket.onclose = onclose
+  socket.onerror = onerror
+  socket.onmessage = onmessage
 
   proxy.on('close', destroy)
 
@@ -82,14 +82,14 @@ function WebSocketStream(target, protocols, options) {
     done()
   }
 
-  function onready() {
+  function onopen() {
     stream.setReadable(proxy)
     stream.setWritable(proxy)
     stream.emit('connect')
   }
 
   function onclose() {
-    stream.end();
+    stream.end()
     stream.destroy()
   }
 
