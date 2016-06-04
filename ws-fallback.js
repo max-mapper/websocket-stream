@@ -1,1 +1,1 @@
-module.exports = window.WebSocket || window.MozWebSocket
+module.exports = WebSocket || MozWebSocket || window.WebSocket || window.MozWebSocket
