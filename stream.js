@@ -58,8 +58,23 @@ function WebSocketStream(target, protocols, options) {
 
   proxy.on('close', destroy)
 
+  // for server only
+  // The value of the arguemnt called 'binary' is decided on a chunk by chunk basis by default.
+  // socket.send() modify the passed in options argument.
+  // Hence, reusing the same object on each send call results in a situation, where
+  // any unpassed paramters will be set based on the very first chunk; To overcome this
+  // a new object literal is needed for each invocation of send
+  function sendOptions() {
+    return {
+      binary: options.binary,
+      mask: options.mask,
+      fin: options.fin,
+      compress: options.compress
+    }
+  }
+
   function socketWriteNode(chunk, enc, next) {
-    socket.send(chunk, next)
+    socket.send(chunk, sendOptions(), next)
   }
 
   function socketWriteBrowser(chunk, enc, next) {
