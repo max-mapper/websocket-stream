@@ -25,3 +25,25 @@ test('echo works two times', function(t) {
   })
   stream.write(new Buffer('hello'))
 })
+
+test('with bare WebSocket, strings as strings', function (t) {
+  var socket = new WebSocket('ws://localhost:8344')
+
+  socket.onmessage = function (e) {
+    var data = e.data
+    t.ok(typeof data === 'string', 'data must be a string')
+    socket.close()
+    t.end()
+  }
+})
+
+test('with bare WebSocket, binary only', function (t) {
+  var socket = new WebSocket('ws://localhost:8345')
+
+  socket.onmessage = function (e) {
+    var data = e.data
+    t.notOk(typeof data === 'string', 'data must not be a string')
+    socket.close()
+    t.end()
+  }
+})

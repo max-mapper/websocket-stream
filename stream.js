@@ -58,20 +58,11 @@ function WebSocketStream(target, protocols, options) {
 
   proxy.on('close', destroy)
 
-  // server only: socket.send() mutates the passed-in options argument
-  // this helper creates a new options argument for each invocation of socket.send()
-  // see: https://github.com/maxogden/websocket-stream/pull/94#discussion_r71310808
-  function sendOptions() {
-    return {
-      binary: options.binary,
-      mask: options.mask,
-      fin: options.fin,
-      compress: options.compress
-    }
-  }
-
   function socketWriteNode(chunk, enc, next) {
-    socket.send(chunk, sendOptions(), next)
+    if (options.binary && !(chunk instanceof Buffer)) {
+      chunk = new Buffer(chunk, 'utf8')
+    }
+    socket.send(chunk, next)
   }
 
   function socketWriteBrowser(chunk, enc, next) {

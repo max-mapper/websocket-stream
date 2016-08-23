@@ -17,7 +17,7 @@ function Server(opts, cb) {
     if (!proxied && event === 'stream') {
       proxied = true
       this.on('connection', function(conn) {
-        this.emit('stream', stream(conn))
+        this.emit('stream', stream(conn, opts))
       })
     }
   })
