@@ -22,10 +22,10 @@ function forBare (opts) {
 }
 
 forBare({
-  port: 8344
+  port: 8344,
+  binary: false
 })
 
 forBare({
-  port: 8345,
-  binary: true
+  port: 8345
 })

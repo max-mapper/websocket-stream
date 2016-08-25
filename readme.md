@@ -36,9 +36,9 @@ Default: `1000` (1 second)
 
 ##### `options.binary`
 
-Always convert
+Always convert to `Buffer` in Node.js before sending.
 
-Default: `false`
+Default: `true`
 
 ##### Other options
 

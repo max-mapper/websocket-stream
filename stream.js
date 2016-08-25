@@ -58,8 +58,10 @@ function WebSocketStream(target, protocols, options) {
 
   proxy.on('close', destroy)
 
+  var coerceToBuffer = options.binary || options.binary === undefined
+
   function socketWriteNode(chunk, enc, next) {
-    if (options.binary && !(chunk instanceof Buffer)) {
+    if (coerceToBuffer && !(chunk instanceof Buffer)) {
       chunk = new Buffer(chunk, 'utf8')
     }
     socket.send(chunk, next)
