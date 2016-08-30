@@ -34,6 +34,12 @@ How long to wait before checking if the socket buffer has drained sufficently fo
 
 Default: `1000` (1 second)
 
+##### `options.binary`
+
+Always convert to `Buffer` in Node.js before sending.
+
+Default: `true`
+
 ##### Other options
 
 When used in node.js see the [ws.WebSocket documentation](https://github.com/websockets/ws/blob/master/doc/ws.md#class-wswebsocket)
