@@ -61,7 +61,7 @@ function WebSocketStream(target, protocols, options) {
   var coerceToBuffer = options.binary || options.binary === undefined
 
   function socketWriteNode(chunk, enc, next) {
-    if (coerceToBuffer && !(chunk instanceof Buffer)) {
+    if (coerceToBuffer && typeof chunk === 'string') {
       chunk = new Buffer(chunk, 'utf8')
     }
     socket.send(chunk, next)
@@ -71,6 +71,10 @@ function WebSocketStream(target, protocols, options) {
     if (socket.bufferedAmount > bufferSize) {
       setTimeout(socketWriteBrowser, bufferTimeout, chunk, enc, next)
       return
+    }
+
+    if (coerceToBuffer && typeof chunk === 'string') {
+      chunk = new Buffer(chunk, 'utf8')
     }
 
     try {
