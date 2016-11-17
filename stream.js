@@ -16,6 +16,10 @@ function WebSocketStream(target, protocols, options) {
     // accept the "options" Object as the 2nd argument
     options = protocols
     protocols = null
+
+    if (typeof options.protocol === 'string') {
+      protocols = [options.protocol];
+    }
   }
 
   if (!options) options = {}
