@@ -47,3 +47,14 @@ test('with bare WebSocket, binary only', function (t) {
     t.end()
   }
 })
+
+test('coerce client data as binary', function(t) {
+  var stream = ws('ws://localhost:8346', { binary: true })
+  stream.on('data', function(o) {
+    t.ok(Buffer.isBuffer(o), 'is buffer')
+    t.equal(o.toString(), 'success', 'success!')
+    stream.destroy()
+    t.end()
+  })
+  stream.write('hello')
+})
