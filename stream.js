@@ -1,3 +1,5 @@
+'use strict'
+
 var through = require('through2')
 var duplexify = require('duplexify')
 var WS = require('ws')
