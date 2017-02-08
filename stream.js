@@ -17,7 +17,7 @@ function WebSocketStream(target, protocols, options) {
   if (protocols && !Array.isArray(protocols) && 'object' === typeof protocols) {
     // accept the "options" Object as the 2nd argument
     options = protocols
-    protocols = null
+    protocols = []
 
     if (typeof options.protocol === 'string' || Array.isArray(options.protocol)) {
       protocols = options.protocol;
@@ -67,6 +67,13 @@ function WebSocketStream(target, protocols, options) {
   var coerceToBuffer = options.binary || options.binary === undefined
 
   function socketWriteNode(chunk, enc, next) {
+    // avoid errors, this never happens unless
+    // destroy() is called
+    if (socket.readyState !== WS.OPEN) {
+      next()
+      return
+    }
+
     if (coerceToBuffer && typeof chunk === 'string') {
       chunk = new Buffer(chunk, 'utf8')
     }
