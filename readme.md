@@ -34,9 +34,17 @@ How long to wait before checking if the socket buffer has drained sufficently fo
 
 Default: `1000` (1 second)
 
+##### `options.objectMode`
+
+Send each chunk on its own, and do not try to pack them in a single
+websocket frame.
+
+Default: `false`
+
 ##### `options.binary`
 
 Always convert to `Buffer` in Node.js before sending.
+Forces `options.objectMode` to `false`.
 
 Default: `true`
 
