@@ -1,10 +1,34 @@
 'use strict'
 
-var through = require('through2')
+var Transform = require('readable-stream').Transform
 var duplexify = require('duplexify')
 var WS = require('ws')
 
 module.exports = WebSocketStream
+
+function buildProxy (options, socketWrite, socketEnd) {
+  var proxy = new Transform({
+    objectMode: options.objectMode
+  })
+
+  proxy._destroyed = false
+  proxy._write = socketWrite
+  proxy._flush = socketEnd
+
+  proxy.destroy = function(err) {
+    if (this._destroyed) return
+      this._destroyed = true
+
+    var self = this
+    process.nextTick(function() {
+      if (err)
+        self.emit('error', err)
+      self.emit('close')
+    })
+  }
+
+  return proxy
+}
 
 function WebSocketStream(target, protocols, options) {
   var stream, socket
@@ -12,7 +36,6 @@ function WebSocketStream(target, protocols, options) {
   var isBrowser = process.title === 'browser'
   var isNative = !!global.WebSocket
   var socketWrite = isBrowser ? socketWriteBrowser : socketWriteNode
-  var proxy = through.obj(socketWrite, socketEnd)
 
   if (protocols && !Array.isArray(protocols) && 'object' === typeof protocols) {
     // accept the "options" Object as the 2nd argument
@@ -25,6 +48,16 @@ function WebSocketStream(target, protocols, options) {
   }
 
   if (!options) options = {}
+
+  if (options.objectMode === undefined) {
+    options.objectMode = !(options.binary === true || options.binary === undefined)
+  }
+
+  var proxy = buildProxy(options, socketWrite, socketEnd)
+
+  if (!options.objectMode) {
+    proxy._writev = writev
+  }
 
   // browser only: sets the maximum socket buffer size before throttling
   var bufferSize = options.browserBufferSize || 1024 * 512
@@ -64,7 +97,7 @@ function WebSocketStream(target, protocols, options) {
 
   proxy.on('close', destroy)
 
-  var coerceToBuffer = options.binary || options.binary === undefined
+  var coerceToBuffer = !options.objectMode
 
   function socketWriteNode(chunk, enc, next) {
     // avoid errors, this never happens unless
@@ -128,6 +161,20 @@ function WebSocketStream(target, protocols, options) {
 
   function destroy() {
     socket.close()
+  }
+
+  // this is to be enabled only if objectMode is false
+  function writev (chunks, cb) {
+    var buffers = new Array(chunks.length)
+    for (var i = 0; i < chunks.length; i++) {
+      if (typeof chunks[i].chunk === 'string') {
+        buffers[i] = new Buffer(chunks[i], 'utf8') // TODO use safe-buffer
+      } else {
+        buffers[i] = chunks[i].chunk
+      }
+    }
+
+    this._write(Buffer.concat(buffers), 'binary', cb)
   }
 
   return stream
