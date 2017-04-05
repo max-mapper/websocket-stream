@@ -40,6 +40,14 @@ Always convert to `Buffer` in Node.js before sending.
 
 Default: `true`
 
+##### `options.perMessageDeflate`
+
+We recommend disabling the [per message deflate
+extension](https://tools.ietf.org/html/rfc7692) to achieve the best
+throughput.
+
+Default: `false`
+
 ##### Other options
 
 When used in node.js see the [ws.WebSocket documentation](https://github.com/websockets/ws/blob/master/doc/ws.md#class-wswebsocket)
@@ -51,6 +59,22 @@ Using the [`ws`](http://npmjs.org/ws) module you can make a websocket server and
 ```javascript
 var websocket = require('websocket-stream')
 var wss = websocket.createServer({server: someHTTPServer}, handle)
+
+function handle(stream) {
+  fs.createReadStream('bigdata.json').pipe(stream)
+}
+```
+
+We recommend disabling the [per message deflate
+extension](https://tools.ietf.org/html/rfc7692) to achieve the best
+throughput:
+
+```javascript
+var websocket = require('websocket-stream')
+var wss = websocket.createServer({
+  perMessageDeflate: false,
+  server: someHTTPServer
+}, handle)
 
 function handle(stream) {
   fs.createReadStream('bigdata.json').pipe(stream)
