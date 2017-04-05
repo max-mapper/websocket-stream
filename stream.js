@@ -17,7 +17,7 @@ function WebSocketStream(target, protocols, options) {
   if (protocols && !Array.isArray(protocols) && 'object' === typeof protocols) {
     // accept the "options" Object as the 2nd argument
     options = protocols
-    protocols = []
+    protocols = null
 
     if (typeof options.protocol === 'string' || Array.isArray(options.protocol)) {
       protocols = options.protocol;
