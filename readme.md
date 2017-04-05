@@ -46,7 +46,16 @@ We recommend disabling the [per message deflate
 extension](https://tools.ietf.org/html/rfc7692) to achieve the best
 throughput.
 
-Default: `false`
+Default: `true`
+
+Example:
+
+```js
+var websocket = require('websocket-stream')
+var ws = websocket('ws://realtimecats.com', {
+  perMessageDeflate: false
+})
+```
 
 ##### Other options
 
