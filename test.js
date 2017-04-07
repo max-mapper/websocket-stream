@@ -4,6 +4,7 @@ var echo = require("./echo-server")
 var WebSocketServer = require('ws').Server
 var http = require('http')
 var concat = require('concat-stream')
+var Buffer = require('safe-buffer').Buffer
 
 test('echo server', function(t) {
 
@@ -147,7 +148,7 @@ test('destroy client pipe should close server pipe', function(t) {
     client.on('data', function(o) {
       client.destroy()
     })
-    client.write(new Buffer('hello'))
+    client.write(Buffer.from('hello'))
   }
 
   var opts = {}
