@@ -34,7 +34,7 @@
     "beefy": "^2.1.1",
     "browserify": "^14.0.0",
     "concat-stream": "^1.4.7",
-    "tape": "^2.14.0"
+    "tape": "^4.6.0"
   },
   "optionalDependencies": {},
   "browser": {
