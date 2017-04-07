@@ -1,5 +1,6 @@
 var ws = require('./')
 var test = require('tape')
+var Buffer = require('safe-buffer').Buffer
 
 test('echo works', function(t) {
   var stream = ws('ws://localhost:8343')
@@ -9,21 +10,21 @@ test('echo works', function(t) {
     stream.destroy()
     t.end()
   })
-  stream.write(new Buffer('hello'))
+  stream.write(Buffer.from('hello'))
 })
 
 test('echo works two times', function(t) {
   var stream = ws('ws://localhost:8343')
   stream.once('data', function(o) {
     t.equal(o.toString(), 'hello', 'got first hello back')
-    stream.write(new Buffer('hello'))
+    stream.write(Buffer.from('hello'))
     stream.once('data', function(o) {
       t.equal(o.toString(), 'hello', 'got second hello back')
       stream.destroy()
       t.end()
     })
   })
-  stream.write(new Buffer('hello'))
+  stream.write(Buffer.from('hello'))
 })
 
 test('with bare WebSocket, strings as strings', function (t) {

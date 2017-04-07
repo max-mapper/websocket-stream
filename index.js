@@ -1,6 +1,6 @@
 
-var Server = require('./server.js')
+var server = require('./server.js')
 
 module.exports = require('./stream.js')
-module.exports.Server = Server
-module.exports.createServer = Server
+module.exports.Server = server.Server
+module.exports.createServer = server.createServer

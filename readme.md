@@ -34,11 +34,36 @@ How long to wait before checking if the socket buffer has drained sufficently fo
 
 Default: `1000` (1 second)
 
+##### `options.objectMode`
+
+Send each chunk on its own, and do not try to pack them in a single
+websocket frame.
+
+Default: `false`
+
 ##### `options.binary`
 
 Always convert to `Buffer` in Node.js before sending.
+Forces `options.objectMode` to `false`.
 
 Default: `true`
+
+##### `options.perMessageDeflate`
+
+We recommend disabling the [per message deflate
+extension](https://tools.ietf.org/html/rfc7692) to achieve the best
+throughput.
+
+Default: `true`
+
+Example:
+
+```js
+var websocket = require('websocket-stream')
+var ws = websocket('ws://realtimecats.com', {
+  perMessageDeflate: false
+})
+```
 
 ##### Other options
 
@@ -51,6 +76,22 @@ Using the [`ws`](http://npmjs.org/ws) module you can make a websocket server and
 ```javascript
 var websocket = require('websocket-stream')
 var wss = websocket.createServer({server: someHTTPServer}, handle)
+
+function handle(stream) {
+  fs.createReadStream('bigdata.json').pipe(stream)
+}
+```
+
+We recommend disabling the [per message deflate
+extension](https://tools.ietf.org/html/rfc7692) to achieve the best
+throughput:
+
+```javascript
+var websocket = require('websocket-stream')
+var wss = websocket.createServer({
+  perMessageDeflate: false,
+  server: someHTTPServer
+}, handle)
 
 function handle(stream) {
   fs.createReadStream('bigdata.json').pipe(stream)

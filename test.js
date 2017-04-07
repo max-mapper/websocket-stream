@@ -4,11 +4,12 @@ var echo = require("./echo-server")
 var WebSocketServer = require('ws').Server
 var http = require('http')
 var concat = require('concat-stream')
+var Buffer = require('safe-buffer').Buffer
 
 test('echo server', function(t) {
 
   echo.start(function() {
-    var client = websocket(echo.url, echo.options)
+    var client = websocket(echo.url)
 
     client.on('error', console.error)
 
@@ -29,7 +30,7 @@ test('echo server', function(t) {
 test('emitting not connected errors', function(t) {
 
   echo.start(function() {
-    var client = websocket(echo.url, echo.options)
+    var client = websocket(echo.url)
 
     client.on('error', function() {
       echo.stop(function() {
@@ -147,7 +148,7 @@ test('destroy client pipe should close server pipe', function(t) {
     client.on('data', function(o) {
       client.destroy()
     })
-    client.write(new Buffer('hello'))
+    client.write(Buffer.from('hello'))
   }
 
   var opts = {}
@@ -223,5 +224,81 @@ test('stream handlers should fire once per connection', function(t) {
   server.listen(0, function() {
     var w = websocket('ws://localhost:' + server.address().port)
     w.end('pizza cats\n')
+  })
+})
+
+test('client with writev', function(t) {
+  var server = http.createServer()
+
+  var str = ''
+  var wss = websocket.createServer({
+    server: server
+  }, function (stream) {
+    stream.once('data', function(data) {
+      t.ok(Buffer.isBuffer(data), 'is a buffer')
+      t.equal(data.toString(), 'hello world')
+
+      stream.once('data', function(data) {
+        t.ok(Buffer.isBuffer(data), 'is a buffer')
+        t.equal(data.toString(), str)
+        stream.end()
+        server.close()
+        t.end()
+      })
+    })
+  })
+
+  server.listen(8352, function () {
+    var client = websocket('ws://localhost:8352', {
+      objectMode: false
+    })
+
+    client.on('error', console.error)
+
+    client.once('connect', function () {
+      client.cork()
+      do {
+        str += 'foobar'
+      } while (client.write('foobar'))
+      client.uncork()
+    })
+
+    client.write('hello world')
+  })
+})
+
+test('server with writev', function(t) {
+  var server = http.createServer()
+
+  var str = ''
+  var wss = websocket.createServer({
+    server: server,
+    objectMode: false
+  }, function (stream) {
+    stream.cork()
+    do {
+      str += 'foobar'
+    } while (stream.write('foobar'))
+    stream.uncork()
+  })
+
+  server.listen(8352, function () {
+    var client = websocket('ws://localhost:8352')
+
+    client.on('error', console.error)
+
+    client.once('data', function(data) {
+      t.ok(Buffer.isBuffer(data), 'is a buffer')
+      t.equal(data.toString(), str)
+      client.end()
+      server.close()
+      t.end()
+    })
+  })
+})
+
+test('stop echo', function(t) {
+  echo.stop(function() {
+    t.end()
   })
 })
