@@ -3,6 +3,7 @@
 var Transform = require('readable-stream').Transform
 var duplexify = require('duplexify')
 var WS = require('ws')
+var Buffer = require('safe-buffer').Buffer
 
 module.exports = WebSocketStream
 
@@ -154,8 +155,8 @@ function WebSocketStream(target, protocols, options) {
 
   function onmessage(event) {
     var data = event.data
-    if (data instanceof ArrayBuffer) data = new Buffer(new Uint8Array(data))
-    else data = new Buffer(data)
+    if (data instanceof ArrayBuffer) data = Buffer.from(new Uint8Array(data))
+    else data = Buffer.from(data, 'utf8')
     proxy.push(data)
   }
 
@@ -168,7 +169,7 @@ function WebSocketStream(target, protocols, options) {
     var buffers = new Array(chunks.length)
     for (var i = 0; i < chunks.length; i++) {
       if (typeof chunks[i].chunk === 'string') {
-        buffers[i] = new Buffer(chunks[i], 'utf8') // TODO use safe-buffer
+        buffers[i] = Buffer.from(chunks[i], 'utf8')
       } else {
         buffers[i] = chunks[i].chunk
       }
