@@ -20,7 +20,7 @@ The underlying `WebSocket` instance is available as `ws.socket`.
 
 #### Options
 
-The available options differs depending on if you use this module in the browser or with node.js. Options can be passed in as the third or second argument - `WebSocket(address, [protocols], [options])`
+The available options differs depending on if you use this module in the browser or with node.js. Options can be passed in as the third or second argument - `WebSocket(address, [protocols], [options])`.
 
 ##### `options.browserBufferSize`
 
@@ -64,6 +64,8 @@ var ws = websocket('ws://realtimecats.com', {
   perMessageDeflate: false
 })
 ```
+
+Beware that this is the only one option you cannot set on the client. You must set it on the server and this will be negotiated with the client.
 
 ##### Other options
 
