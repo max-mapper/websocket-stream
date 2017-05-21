@@ -54,7 +54,7 @@ We recommend disabling the [per message deflate
 extension](https://tools.ietf.org/html/rfc7692) to achieve the best
 throughput.
 
-Default: `true`
+Default: `true` on the client, `false` on the server.
 
 Example:
 
@@ -65,7 +65,7 @@ var ws = websocket('ws://realtimecats.com', {
 })
 ```
 
-Beware that this is the only one option you cannot set on the client. You must set it on the server and this will be negotiated with the client.
+Beware that this option is ignored by browser clients. To make sure that permessage-deflate is never used, disable it on the server.
 
 ##### Other options
 
