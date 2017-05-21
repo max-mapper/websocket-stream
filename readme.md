@@ -79,7 +79,8 @@ Using the [`ws`](http://npmjs.org/ws) module you can make a websocket server and
 var websocket = require('websocket-stream')
 var wss = websocket.createServer({server: someHTTPServer}, handle)
 
-function handle(stream) {
+function handle(stream, request) {
+  // `request` is the upgrade request sent by the client.
   fs.createReadStream('bigdata.json').pipe(stream)
 }
 ```
