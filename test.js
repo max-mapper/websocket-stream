@@ -193,10 +193,10 @@ test('error on socket should forward it to pipe', function(t) {
 
 test('stream end', function(t) {
   t.plan(1)
- 
+
   var server = http.createServer()
   websocket.createServer({ server: server }, handle)
- 
+
   function handle (stream) {
     stream.pipe(concat(function (body) {
       t.equal(body.toString(), 'pizza cats\n')
@@ -210,7 +210,7 @@ test('stream end', function(t) {
 })
 
 test('stream handlers should fire once per connection', function(t) {
-  t.plan(1)
+  t.plan(2)
 
   var server = http.createServer()
   var wss = websocket.createServer({ server: server }, function() {
@@ -220,7 +220,10 @@ test('stream handlers should fire once per connection', function(t) {
   })
 
   var m = 0
-  wss.on('stream', function() { m++ })
+  wss.on('stream', function(stream, request) {
+    t.ok(request instanceof http.IncomingMessage)
+    m++
+  })
   server.listen(0, function() {
     var w = websocket('ws://localhost:' + server.address().port)
     w.end('pizza cats\n')

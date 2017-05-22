@@ -11,8 +11,8 @@ class Server extends WebSocketServer{
     this.on('newListener', function(event) {
       if (!proxied && event === 'stream') {
         proxied = true
-        this.on('connection', function(conn) {
-          this.emit('stream', stream(conn, opts))
+        this.on('connection', function(conn, req) {
+          this.emit('stream', stream(conn, opts), req)
         })
       }
     })
