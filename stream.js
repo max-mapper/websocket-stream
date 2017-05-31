@@ -35,7 +35,7 @@ function WebSocketStream(target, protocols, options) {
   var stream, socket
 
   var isBrowser = process.title === 'browser'
-  var isNative = !!global.WebSocket
+  var isNative = !!(global.WebSocket || global.MozWebSocket)
   var socketWrite = isBrowser ? socketWriteBrowser : socketWriteNode
 
   if (protocols && !Array.isArray(protocols) && 'object' === typeof protocols) {
