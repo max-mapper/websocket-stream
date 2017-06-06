@@ -59,3 +59,21 @@ test('coerce client data as binary', function(t) {
   })
   stream.write('hello')
 })
+
+test('CloseEvent error is emitted on un-cleanly closed connections', function(t) {
+  var stream = ws('ws://localhost:0')
+  stream.on('data', function(o) {
+    t.ok(Buffer.isBuffer(o), 'is buffer')
+    t.equal(o.toString(), 'hello', 'got hello back')
+  })
+
+  stream.on('error', function (err) {
+    t.ok(err instanceof CloseEvent)
+  })
+
+  stream.on('close', function () {
+    t.end()
+  })
+
+  stream.write(Buffer.from('hello'))
+})

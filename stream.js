@@ -99,6 +99,7 @@ function WebSocketStream(target, protocols, options) {
   proxy.on('close', destroy)
 
   var coerceToBuffer = !options.objectMode
+  var emittedError
 
   function socketWriteNode(chunk, enc, next) {
     // avoid errors, this never happens unless
@@ -144,13 +145,22 @@ function WebSocketStream(target, protocols, options) {
     stream.emit('connect')
   }
 
-  function onclose() {
+  function onclose(event) {
+    // use the more descriptive error (CloseEvent)
+    if (!event.wasClean) {
+      emittedError = event
+    }
+
     stream.end()
-    stream.destroy()
+    stream.destroy(emittedError)
   }
 
   function onerror(err) {
-    stream.destroy(err)
+    // give onclose a chance to give us a better error
+    emittedError = err
+    process.nextTick(function () {
+      stream.destroy(err)
+    })
   }
 
   function onmessage(event) {
