@@ -83,7 +83,7 @@ function WebSocketStream(target, protocols, options) {
   }
 
   // was already open when passed in
-  if (socket.readyState === WS.OPEN) {
+  if (socket.readyState === socket.OPEN) {
     stream = proxy
   } else {
     stream = duplexify.obj()
