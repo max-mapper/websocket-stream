@@ -103,7 +103,7 @@ function WebSocketStream(target, protocols, options) {
   function socketWriteNode(chunk, enc, next) {
     // avoid errors, this never happens unless
     // destroy() is called
-    if (socket.readyState !== WS.OPEN) {
+    if (socket.readyState !== socket.OPEN) {
       next()
       return
     }
