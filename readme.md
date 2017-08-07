@@ -101,6 +101,33 @@ function handle(stream) {
 }
 ```
 
+You can even use it on express.js with the [express-ws](https://www.npmjs.com/package/express-ws) library:
+
+```js
+const express = require('express');
+const expressWebSocket = require('express-ws');
+const websocketStream = require('websocket-stream/stream');
+const app = express();
+
+// extend express app with app.ws()
+expressWebSocket(app, null, {
+    // ws options here
+    perMessageDeflate: false,
+});
+ 
+app.ws('/bigdata.json', function(ws, req) {
+  // convert ws instance to stream
+  const stream = websocketStream(ws, {
+    // websocket-stream options here
+    binary: true,
+  });
+
+  fs.createReadStream('bigdata.json').pipe(stream);
+});
+ 
+app.listen(3000);
+```
+
 ## Run the tests
 
 ### Server-side tests
