@@ -10,8 +10,9 @@ This module works in Node or in Browsers that support WebSockets. You can use [b
 
 ```javascript
 var websocket = require('websocket-stream')
-var ws = websocket('ws://realtimecats.com')
-ws.pipe(somewhereAwesome)
+var ws = websocket('ws://echo.websocket.org')
+process.stdin.pipe(ws)
+ws.pipe(process.stdout)
 ```
 
 In the example above `ws` is a duplex stream. That means you can pipe output to anything that accepts streams. You can also pipe data into streams (such as a webcam feed or audio data).
