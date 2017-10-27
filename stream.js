@@ -17,6 +17,7 @@ function buildProxy (options, socketWrite, socketEnd) {
 
   proxy._destroy = function(err, cb) {
     var self = this
+    this.push(null)
     process.nextTick(function() {
       cb(err);
       self.emit('close')
