@@ -12,18 +12,13 @@ function buildProxy (options, socketWrite, socketEnd) {
     objectMode: options.objectMode
   })
 
-  proxy._destroyed = false
   proxy._write = socketWrite
   proxy._flush = socketEnd
 
-  proxy.destroy = function(err) {
-    if (this._destroyed) return
-      this._destroyed = true
-
+  proxy._destroy = function(err, cb) {
     var self = this
     process.nextTick(function() {
-      if (err)
-        self.emit('error', err)
+      cb(err);
       self.emit('close')
     })
   }
@@ -155,7 +150,7 @@ function WebSocketStream(target, protocols, options) {
 
   function onmessage(event) {
     var data = event.data
-    if (data instanceof ArrayBuffer) data = Buffer.from(new Uint8Array(data))
+    if (data instanceof ArrayBuffer) data = Buffer.from(data)
     else data = Buffer.from(data, 'utf8')
     proxy.push(data)
   }
