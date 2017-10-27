@@ -15,16 +15,6 @@ function buildProxy (options, socketWrite, socketEnd) {
   proxy._write = socketWrite
   proxy._flush = socketEnd
 
-  proxy._destroy = function(err, cb) {
-    var self = this
-    this.push(null)
-    this.end()
-    process.nextTick(function() {
-      cb(err);
-      self.emit('close')
-    })
-  }
-
   return proxy
 }
 
