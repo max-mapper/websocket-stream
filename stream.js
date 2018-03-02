@@ -83,6 +83,8 @@ function WebSocketStream(target, protocols, options) {
   socket.onerror = onerror
   socket.onmessage = onmessage
 
+  proxy.on('error', function(){})
+
   proxy.on('close', destroy)
 
   var coerceToBuffer = !options.objectMode
