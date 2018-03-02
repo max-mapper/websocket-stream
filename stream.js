@@ -96,7 +96,7 @@ function WebSocketStream(target, protocols, options) {
     }
 
     if (coerceToBuffer && typeof chunk === 'string') {
-      chunk = new Buffer(chunk, 'utf8')
+      chunk = Buffer.from(chunk, 'utf8')
     }
     socket.send(chunk, next)
   }
@@ -108,7 +108,7 @@ function WebSocketStream(target, protocols, options) {
     }
 
     if (coerceToBuffer && typeof chunk === 'string') {
-      chunk = new Buffer(chunk, 'utf8')
+      chunk = Buffer.from(chunk, 'utf8')
     }
 
     try {

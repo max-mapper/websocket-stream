@@ -2,6 +2,7 @@ var http = require('http')
 var websocket = require('./')
 var echo = require('./echo-server.js')
 var WebSocketServer = require('ws').Server
+var Buffer = require('safe-buffer').Buffer
 
 echo.start(function(){
   console.log('echo server is running')
@@ -44,9 +45,9 @@ function checkIfDataIsBinary () {
   function waitFor (ws) {
     ws.on('message', function (data) {
       if (!Buffer.isBuffer(data)) {
-        ws.send(new Buffer('fail'))
+        ws.send(Buffer.from('fail'))
       } else {
-        ws.send(new Buffer('success'))
+        ws.send(Buffer.from('success'))
       }
     })
   }
