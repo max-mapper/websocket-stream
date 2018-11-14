@@ -60,7 +60,9 @@ function WebSocketStream(target, protocols, options) {
   } else {
     // special constructor treatment for native websockets in browsers, see
     // https://github.com/maxogden/websocket-stream/issues/82
-    if (isNative && isBrowser) {
+    // additionally, if options is supplied and contains headers property, keep initialise with protocols & options
+    let hasAdditionalHeaders = !!(options && options.headers);
+    if (isNative && isBrowser && !hasAdditionalHeaders) {
       socket = new WS(target, protocols)
     } else {
       socket = new WS(target, protocols, options)
