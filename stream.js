@@ -72,15 +72,13 @@ function WebSocketStream(target, protocols, options) {
   // was already open when passed in
   if (socket.readyState === socket.OPEN) {
     stream = proxy
+  } else if (isBrowser) {
+    stream = proxy
+    stream.cork()
+    socket.onopen = onopenBrowser
   } else {
-    if (isBrowser) {
-      stream = proxy
-      stream.cork()
-      socket.onopen = onopenBrowser
-    } else {
-      stream = duplexify.obj()
-      socket.onopen = onopen
-    }
+    stream = duplexify.obj()
+    socket.onopen = onopen
   }
 
   stream.socket = socket
