@@ -1,6 +1,6 @@
 {
   "name": "websocket-stream",
-  "version": "5.1.2",
+  "version": "5.2.0",
   "license": "BSD-2-Clause",
   "description": "Use websockets with the node streams API. Works in browser and node",
   "scripts": {
@@ -23,18 +23,18 @@
     "email": "max@maxogden.com"
   },
   "dependencies": {
-    "duplexify": "^3.5.1",
+    "duplexify": "^3.6.1",
     "inherits": "^2.0.1",
-    "readable-stream": "^2.3.3",
-    "safe-buffer": "^5.1.1",
-    "ws": "^3.2.0",
+    "readable-stream": "^3.0.0",
+    "safe-buffer": "^5.1.2",
+    "ws": "^6.1.2",
     "xtend": "^4.0.0"
   },
   "devDependencies": {
     "beefy": "^2.1.1",
-    "browserify": "^14.5.0",
-    "concat-stream": "^1.4.7",
-    "tape": "^4.8.0"
+    "browserify": "^16.2.3",
+    "concat-stream": "^1.6.2",
+    "tape": "^4.9.1"
   },
   "optionalDependencies": {},
   "browser": {
