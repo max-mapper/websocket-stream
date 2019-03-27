@@ -72,6 +72,10 @@ function WebSocketStream(target, protocols, options) {
   // was already open when passed in
   if (socket.readyState === socket.OPEN) {
     stream = proxy
+  } else if (isBrowser) {
+    stream = proxy
+    stream.cork()
+    socket.onopen = onopenBrowser
   } else {
     stream = duplexify.obj()
     socket.onopen = onopen
@@ -128,6 +132,11 @@ function WebSocketStream(target, protocols, options) {
   function onopen() {
     stream.setReadable(proxy)
     stream.setWritable(proxy)
+    stream.emit('connect')
+  }
+
+  function onopenBrowser () {
+    stream.uncork()
     stream.emit('connect')
   }
 
