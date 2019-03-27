@@ -59,16 +59,3 @@ test('coerce client data as binary', function(t) {
   })
   stream.write('hello')
 })
-test('cork logic test', function (t) {
-  var stream = ws('ws://localhost:8343', { binary: true })
-  stream.on('data', function(o) {
-    t.equal(o.toString(), 'hello', 'success!')
-    stream.destroy()
-    t.end()
-  })
-  stream.cork()
-  stream.write('he')
-  stream.write('l')
-  stream.write('lo')
-  stream.uncork()
-})
