@@ -5,6 +5,7 @@ var WebSocketServer = require('ws').Server
 var http = require('http')
 var concat = require('concat-stream')
 var Buffer = require('safe-buffer').Buffer
+var ts = require('typescript')
 
 test('echo server', function(t) {
 
@@ -305,3 +306,33 @@ test('stop echo', function(t) {
     t.end()
   })
 })
+
+test('typescript compilation', function(t) {
+  function compile(fileNames, options) {
+    const program = ts.createProgram(fileNames, options)
+    const emitResult = program.emit()
+
+    const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics)
+
+    return allDiagnostics.map(diagnostic => {
+      if (diagnostic.file) {
+        let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start)
+        let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")
+        return `${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`
+      } else {
+        return `${ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")}`
+      }
+    });
+  }
+
+  const messages = compile(['./ts-tests.ts'], {
+    noEmit: true,
+    noImplicitAny: true,
+    target: ts.ScriptTarget.ES5,
+    module: ts.ModuleKind.CommonJS
+  })
+
+  t.equal(messages.length, 0, 'no errors emitted')
+  t.end()
+})
+
