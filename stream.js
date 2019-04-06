@@ -73,7 +73,10 @@ function WebSocketStream(target, protocols, options) {
   if (socket.readyState === socket.OPEN) {
     stream = proxy
   } else {
-    stream = duplexify.obj()
+    stream = stream = duplexify(undefined, undefined, options)
+    if (!options.objectMode) {
+      stream._writev = writev
+    }
     socket.onopen = onopen
   }
 
