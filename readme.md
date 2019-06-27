@@ -1,6 +1,12 @@
 # websocket-stream
 
-[![NPM](https://nodei.co/npm/websocket-stream.png?global=true)](https://nodei.co/npm/websocket-stream/)
+### Changes made to this repository
+
+I'm using this repo for mqtt in a react-native mobile app.
+
+It sends the aws custom authoriser headers that the original lib does not.
+
+
 
 Use HTML5 [websockets](https://developer.mozilla.org/en-US/docs/WebSockets) using the Node Streams API.
 
