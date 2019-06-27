@@ -22,8 +22,9 @@ function WebSocketStream(target, protocols, options) {
   var stream, socket
 
   var isBrowser = process.title === 'browser'
+  var isReactNative = process.title === 'reactnative'
   var isNative = !!global.WebSocket
-  var socketWrite = isBrowser ? socketWriteBrowser : socketWriteNode
+  var socketWrite = isBrowser || isReactNative ? socketWriteBrowser : socketWriteNode
 
   if (protocols && !Array.isArray(protocols) && 'object' === typeof protocols) {
     // accept the "options" Object as the 2nd argument
