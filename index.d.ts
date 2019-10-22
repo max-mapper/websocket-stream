@@ -1,4 +1,4 @@
-// Type definitions for websocket-stream 5.3
+// Type definitions for websocket-stream 5.5
 // Project: https://github.com/maxogden/websocket-stream#readme
 // Original definitions by: Ben Burns <https://github.com/benjamincburns>
 
@@ -21,7 +21,14 @@ declare namespace WebSocketStream {
   function createServer(opts?: WebSocket.ServerOptions, callback?: () => void): Server;
 }
 
-declare function WebSocketStream(target: string | WebSocket, options?: WebSocket.ClientOptions): WebSocketStream.WebSocketDuplex;
-declare function WebSocketStream(target: string | WebSocket, protocols?: string | string[], options?: WebSocket.ClientOptions): WebSocketStream.WebSocketDuplex;
+interface ClientOptions extends WebSocket.ClientOptions {
+  browserBufferSize?: number;
+  browserBufferTimeout?: number;
+  objectMode?: boolean;
+  binary?: boolean;
+}
+
+declare function WebSocketStream(target: string | WebSocket, options?: ClientOptions): WebSocketStream.WebSocketDuplex;
+declare function WebSocketStream(target: string | WebSocket, protocols?: string | string[], options?: ClientOptions): WebSocketStream.WebSocketDuplex;
 
 export = WebSocketStream;
