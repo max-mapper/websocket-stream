@@ -68,6 +68,12 @@ function WebSocketStream(target, protocols, options) {
 
     socket.binaryType = 'arraybuffer'
   }
+  
+  // according to https://github.com/baygeldin/ws-streamify/issues/1
+  // Nodejs WebSocketServer cause memory leak
+  // Handlers like onerror, onclose, onmessage and onopen are accessible via setter/getter
+  // And setter first of all fires removeAllListeners, that doesnt make inner array of clients on WebSocketServer cleared ever
+  var eventListenerSupport = ('undefined' === typeof socket.addEventListener)
 
   // was already open when passed in
   if (socket.readyState === socket.OPEN) {
@@ -77,14 +83,25 @@ function WebSocketStream(target, protocols, options) {
     if (!options.objectMode) {
       stream._writev = writev
     }
-    socket.onopen = onopen
+    
+    if (eventListenerSupport) {
+       socket.addEventListener('open', onopen)
+    } else {
+       socket.onopen = onopen
+    }
   }
 
   stream.socket = socket
 
-  socket.onclose = onclose
-  socket.onerror = onerror
-  socket.onmessage = onmessage
+  if (eventListenerSupport) {
+     socket.addEventListener('close', onopen)
+     socket.addEventListener('error', onerror)
+     socket.addEventListener('message', onmessage)
+  } else {
+     socket.onclose = onclose
+     socket.onerror = onerror
+     socket.onmessage = onmessage
+  }
 
   proxy.on('close', destroy)
 
