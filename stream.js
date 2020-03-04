@@ -94,7 +94,7 @@ function WebSocketStream(target, protocols, options) {
   stream.socket = socket
 
   if (eventListenerSupport) {
-     socket.addEventListener('close', onopen)
+     socket.addEventListener('close', onclose)
      socket.addEventListener('error', onerror)
      socket.addEventListener('message', onmessage)
   } else {
