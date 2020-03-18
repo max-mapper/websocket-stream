@@ -23,6 +23,7 @@
     "email": "max@maxogden.com"
   },
   "dependencies": {
+    "@types/ws": "^6.0.1",
     "duplexify": "^3.5.1",
     "inherits": "^2.0.1",
     "readable-stream": "^2.3.3",
@@ -32,7 +33,6 @@
   },
   "devDependencies": {
     "@types/node": "^11.13.4",
-    "@types/ws": "^6.0.1",
     "beefy": "^2.1.8",
     "browserify": "^16.2.3",
     "concat-stream": "^1.6.2",
