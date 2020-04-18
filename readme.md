@@ -129,6 +129,31 @@ app.ws('/bigdata.json', function(ws, req) {
 app.listen(3000);
 ```
 
+### Error handling
+
+Errors both from the underlying websocket and from the TCP socket itself are propagated and emitted on the stream so you _must_ provide an error handler for the stream even if you already have an error handler on the websocket, e.g:
+
+```javascript
+var websocket = require('websocket-stream')
+var wss = websocket.createServer({server: someHTTPServer}, handle)
+
+// this is not enough!
+someHTTPServer.on('connection', function(socket) {
+  socket.on('error', function(err) {
+    console.log("Client socket error:", err);
+  });
+});
+
+function handle(stream, request) {
+  // we need this as well
+  stream.on('error', function(err) {
+    console.log("Stream error:", err);
+  });
+}
+```
+
+If you neglect to add the stream error handler then a simple `ECONNRESET` will crash your application.
+
 ## Run the tests
 
 ### Server-side tests
