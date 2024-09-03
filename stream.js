@@ -176,7 +176,7 @@ function WebSocketStream(target, protocols, options) {
     var buffers = new Array(chunks.length)
     for (var i = 0; i < chunks.length; i++) {
       if (typeof chunks[i].chunk === 'string') {
-        buffers[i] = Buffer.from(chunks[i], 'utf8')
+        buffers[i] = Buffer.from(chunks[i].chunk, 'utf8')
       } else {
         buffers[i] = chunks[i].chunk
       }
